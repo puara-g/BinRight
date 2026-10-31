@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#18814A">
+<meta name="description" content="우리 동네 쓰레기 배출 요일, 품목별 분리배출 방법, 버리고 돌려받는 혜택을 한 번에.">
+<title>바로버림</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app">
+  <header class="top wrap">
+    <div class="logo">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 7h14l-1.2 12.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8L5 7Z" fill="var(--primary)"/><path d="M3.5 7h17M9.5 7V4.5h5V7" stroke="var(--primary-dark)" stroke-width="1.8" stroke-linecap="round"/><path d="m9.3 14 2 2 3.6-3.8" stroke="var(--on-primary)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      바로버림
+    </div>
+    <button class="region-btn" id="regionBtn" type="button" aria-label="지역 변경">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21s7-6.1 7-11.5A7 7 0 0 0 5 9.5C5 14.9 12 21 12 21Z" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="9.5" r="2.5" fill="currentColor"/></svg>
+      <span id="regionName">지역 선택</span>
+    </button>
+  </header>
+
+  <main class="wrap" id="main"></main>
+</div>
+
+<nav class="tabs" aria-label="주요 메뉴">
+  <div class="tabs-in" role="tablist">
+    <button class="tab" role="tab" data-tab="today" type="button">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="3" stroke="currentColor" stroke-width="2"/><path d="M3.5 10h17M8 3v4M16 3v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="15" r="2" fill="currentColor"/></svg>
+      홈
+    </button>
+    <button class="tab" role="tab" data-tab="category" type="button">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5" stroke="currentColor" stroke-width="2"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5" stroke="currentColor" stroke-width="2"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5" stroke="currentColor" stroke-width="2"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5" stroke="currentColor" stroke-width="2"/></svg>
+      카테고리
+    </button>
+    <button class="tab" role="tab" data-tab="benefit" type="button">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4" y="9" width="16" height="11.5" rx="2" stroke="currentColor" stroke-width="2"/><path d="M3 9h18M12 9v11.5M12 9c-1.5-3.5-5.5-4.5-5.5-2S10 9 12 9Zm0 0c1.5-3.5 5.5-4.5 5.5-2S14 9 12 9Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+      혜택
+    </button>
+    <button class="tab" role="tab" data-tab="local" type="button">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 10.5 12 4l8 6.5V19a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 19v-8.5Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 20.5v-6h5v6" stroke="currentColor" stroke-width="2"/></svg>
+      우리동네
+    </button>
+  </div>
+</nav>
+
+<div class="setup" id="setup" hidden>
+  <div class="setup-in wrap">
+    <div class="setup-intro">
+      <div class="logo">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 7h14l-1.2 12.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8L5 7Z" fill="var(--primary)"/><path d="M3.5 7h17M9.5 7V4.5h5V7" stroke="var(--primary-dark)" stroke-width="1.8" stroke-linecap="round"/><path d="m9.3 14 2 2 3.6-3.8" stroke="var(--on-primary)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        바로버림
+      </div>
+      <h1>어느 동네 기준으로<br>알려드릴까요?</h1>
+      <p class="lead">배출 요일과 장소는 동네마다 달라요.<br class="pc"> 한 번만 고르면 다음부터 바로 보여드려요.</p>
+      <p class="sample" id="setupNote">지금은 시연용 예시 지역 6곳만 들어 있어요.<br class="pc"> 요일·장소는 실제 구청 공지와 다를 수 있어요.</p>
+    </div>
+    <div class="setup-main">
+      <div id="regionSetup" class="setup-block picker">
+        <nav class="picker-path" id="pickPath" aria-label="고른 지역"></nav>
+        <div class="picker-head"><h2 id="pickTitle">시·도를 골라 주세요</h2><span class="picker-step" id="pickStep">1 / 3</span></div>
+        <input class="picker-filter" id="pickFilter" type="search" autocomplete="off" enterkeyhint="search" hidden>
+        <div class="picker-grid" id="pickGrid"></div>
+      </div>
+      <div class="setup-bar">
+        <button class="btn primary" id="saveRegion" type="button" disabled>동네를 골라 주세요</button>
+        <button class="btn" id="cancelSetup" type="button" hidden>취소</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

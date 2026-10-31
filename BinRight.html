@@ -1,0 +1,1212 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>바로버림</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap">
+<style>
+/* 모바일 우선 한 화면 앱: 상단 지역 바 + 콘텐츠 + 하단 3탭 */
+:root {
+  --primary: #18814A;
+  --primary-dark: #146B39;
+  --primary-light: #E7F5EC;
+  --on-primary: #FFFFFF;
+  --text: #1A1F1C;
+  --text-sub: #5C6862;
+  --bg: #FFFFFF;
+  --surface: #FFFFFF;
+  --border: #DDE5DF;
+  --warn: #B4530A;
+  --warn-light: #FFF4E8;
+  --food: #6B4E16;
+  --food-light: #FFF6DC;
+  --general: #5C6862;
+  --general-light: #EEF2EF;
+  --bulky: #2563A8;
+  --bulky-light: #EAF2FB;
+  --shadow: 0 1px 2px rgba(20, 40, 28, .06), 0 4px 16px rgba(20, 40, 28, .05);
+  --font: "Pretendard", "Pretendard Variable", "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --r: 14px;
+}
+/* 테마 고정: 흰색(라이트)만 사용 */
+:root, :root[data-theme="dark"] { color-scheme: light; }
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  background: var(--bg); color: var(--text); font-family: var(--font);
+  font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased;
+  font-variant-numeric: tabular-nums; word-break: keep-all; overflow-wrap: anywhere;
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; border-radius: 6px; }
+h1, h2, h3 { text-wrap: balance; margin: 0; }
+
+.app { max-width: 560px; margin: 0 auto; min-height: 100%; display: flex; flex-direction: column; }
+.wrap { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+/* 상단 바 */
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); padding-block: 14px 10px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.logo { font-weight: 800; font-size: 22px; letter-spacing: -0.02em; color: var(--primary-dark); display: flex; align-items: center; gap: 8px; }
+.logo svg { width: 24px; height: 24px; }
+.region-btn { display: flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 12px; border: 1px solid var(--border); background: var(--surface); border-radius: 999px; font-size: 14px; font-weight: 600; min-width: 0; }
+.region-btn span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 46vw; }
+.region-btn svg { width: 16px; height: 16px; flex: none; color: var(--primary); }
+
+main { flex: 1; padding-block: 4px 112px; }
+.view { display: flex; flex-direction: column; gap: 16px; }
+
+.sample { font-size: 13px; color: var(--warn); background: var(--warn-light); border-radius: 10px; padding: 8px 12px; line-height: 1.45; }
+
+/* 오늘 */
+.date { font-size: 15px; color: var(--text-sub); font-weight: 500; }
+.hero { background: var(--primary-light); border-radius: 20px; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+.hero-label { font-size: 15px; font-weight: 600; color: var(--primary-dark); }
+.hero-main { font-size: 28px; font-weight: 700; line-height: 1.25; color: var(--text); letter-spacing: -0.02em; }
+.hero-main.none { font-size: 22px; color: var(--text-sub); }
+.hero-time { font-size: 15px; color: var(--primary-dark); font-weight: 600; }
+
+.cards { display: flex; flex-direction: column; gap: 10px; }
+.gcard { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 14px 16px; display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 4px 12px; align-items: start; }
+.gcard .chip { grid-row: span 2; margin-top: 2px; justify-self: start; }
+.gcard b { font-weight: 600; font-size: 16px; }
+.gcard p { margin: 0; font-size: 14px; color: var(--text-sub); grid-column: 2; line-height: 1.5; }
+
+.chip { display: inline-flex; align-items: center; height: 26px; padding: 0 10px; border-radius: 999px; font-size: 13px; font-weight: 600; white-space: nowrap; }
+.c-recycle { color: var(--primary-dark); background: var(--primary-light); }
+.c-food { color: var(--food); background: var(--food-light); }
+.c-general { color: var(--general); background: var(--general-light); }
+.c-bulky { color: var(--bulky); background: var(--bulky-light); }
+.c-special { color: var(--bulky); background: var(--bulky-light); }
+
+h2 { font-size: 17px; font-weight: 600; }
+.section { display: flex; flex-direction: column; gap: 10px; }
+
+.week { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; }
+.day { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 8px 4px 10px; display: flex; flex-direction: column; align-items: center; gap: 6px; min-height: 108px; }
+button.day { font: inherit; color: inherit; cursor: pointer; }
+.day.today .d { color: var(--primary-dark); font-weight: 700; }
+.day.sel { border-color: var(--primary); box-shadow: inset 0 0 0 1px var(--primary); background: var(--primary-light); }
+.dayinfo { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
+.dayinfo h3 { font-size: 16px; font-weight: 700; }
+.dayrow { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 12px; align-items: start; }
+.dayrow .chip { justify-self: start; margin-top: 1px; }
+.dayrow p { margin: 0; font-size: 14px; line-height: 1.5; }
+.dayrow p small { display: block; color: var(--text-sub); font-size: 13px; }
+.dayinfo .none { margin: 0; font-size: 15px; color: var(--text-sub); }
+.day .d { font-size: 13px; color: var(--text-sub); font-weight: 500; line-height: 1.2; text-align: center; }
+.day .d strong { display: block; font-size: 16px; color: var(--text); font-weight: 700; }
+.day.sun .d strong { color: #C0392B; }
+.dots { display: flex; flex-direction: column; gap: 4px; width: 100%; padding: 0 4px; }
+.bar { height: 6px; border-radius: 3px; }
+.b-general { background: var(--general); } .b-food { background: var(--food); } .b-recycle { background: var(--primary); } .b-pet { background: var(--primary-dark); opacity: .55; } .b-vinyl { background: var(--primary); opacity: .35; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 13px; color: var(--text-sub); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { width: 14px; height: 6px; border-radius: 3px; display: inline-block; }
+.noday { font-size: 12px; color: var(--text-sub); }
+
+.quick { display: flex; flex-wrap: wrap; gap: 8px; }
+.qbtn { min-height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); font-size: 15px; font-weight: 500; }
+.qbtn:hover { border-color: var(--primary); color: var(--primary-dark); }
+
+.src { font-size: 13px; color: var(--text-sub); line-height: 1.5; }
+
+/* 검색 */
+.search-box { position: relative; }
+.search-box svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; color: var(--text-sub); pointer-events: none; }
+.search-box input { width: 100%; height: 52px; border-radius: 14px; border: 1.5px solid var(--border); background: var(--surface); padding: 0 44px 0 44px; font-size: 17px; }
+.search-box input:focus { outline: none; border-color: var(--primary); }
+.clear { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; border: 0; background: none; color: var(--text-sub); font-size: 20px; border-radius: 50%; }
+.results { display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; }
+.res { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 56px; padding: 10px 16px; border: 0; background: none; text-align: left; border-bottom: 1px solid var(--border); width: 100%; }
+.res:last-child { border-bottom: 0; }
+.res:hover { background: var(--primary-light); }
+.res .n { font-weight: 600; font-size: 16px; min-width: 0; }
+.res .a { display: block; font-size: 13px; color: var(--text-sub); font-weight: 400; }
+.empty { background: var(--surface); border: 1px dashed var(--border); border-radius: var(--r); padding: 18px; display: flex; flex-direction: column; gap: 10px; font-size: 15px; }
+.empty b { font-size: 16px; }
+.recent { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.rbtn { min-height: 36px; padding: 0 12px; border-radius: 999px; border: 0; background: var(--general-light); font-size: 14px; }
+.linkbtn { border: 0; background: none; color: var(--text-sub); font-size: 13px; text-decoration: underline; min-height: 36px; }
+.cats { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; }
+.cat { min-height: 52px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface); font-weight: 600; font-size: 15px; text-align: left; padding: 0 14px; display: flex; align-items: center; justify-content: space-between; }
+.cat small { color: var(--text-sub); font-weight: 500; }
+
+/* 상세 */
+.detail { display: flex; flex-direction: column; gap: 16px; }
+.back { align-self: flex-start; display: inline-flex; align-items: center; gap: 4px; min-height: 44px; border: 0; background: none; padding: 0 4px 0 0; color: var(--text-sub); font-size: 15px; font-weight: 500; }
+.back svg { width: 20px; height: 20px; }
+.d-head { display: flex; flex-direction: column; gap: 8px; }
+.d-head h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.3; }
+.d-alias { font-size: 14px; color: var(--text-sub); }
+.when { background: var(--primary-light); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 4px; }
+.when .t { font-size: 14px; font-weight: 600; color: var(--primary-dark); }
+.when .v { font-size: 20px; font-weight: 700; line-height: 1.35; }
+.when .s { font-size: 14px; color: var(--text-sub); }
+.when.special { background: var(--bulky-light); } .when.special .t { color: var(--bulky); }
+.steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; counter-reset: s; }
+.steps li { counter-increment: s; display: grid; grid-template-columns: 32px 1fr; gap: 12px; align-items: start; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; }
+.steps li::before { content: counter(s); width: 28px; height: 28px; border-radius: 50%; background: var(--primary); color: var(--on-primary); font-weight: 700; font-size: 14px; display: grid; place-items: center; }
+.myth { background: var(--warn-light); border-radius: 14px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; }
+.myth b { color: var(--warn); font-size: 14px; }
+.myth p { margin: 0; font-size: 15px; }
+.note { font-size: 14px; color: var(--text-sub); margin: 0; }
+
+/* 우리동네 */
+.local-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.local-head h1 { font-size: 22px; font-weight: 700; line-height: 1.3; }
+.local-head .lv { font-size: 14px; color: var(--text-sub); }
+.btn { min-height: 44px; padding: 0 16px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface); font-weight: 600; font-size: 15px; }
+.btn.primary { background: var(--primary); border-color: var(--primary); color: var(--on-primary); }
+.btn.primary:disabled { opacity: .45; cursor: not-allowed; }
+.table-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); }
+table { border-collapse: collapse; width: 100%; min-width: 380px; font-size: 14px; }
+th, td { padding: 10px 6px; text-align: center; border-bottom: 1px solid var(--border); }
+tr:last-child td { border-bottom: 0; }
+th { font-weight: 600; color: var(--text-sub); font-size: 13px; }
+th.today-col { color: var(--primary-dark); }
+td.today-col { background: var(--primary-light); }
+td:first-child, th:first-child { text-align: left; padding-left: 14px; white-space: nowrap; }
+.mark { display: inline-block; width: 22px; height: 22px; border-radius: 50%; }
+.m-general { background: var(--general); } .m-food { background: var(--food); } .m-recycle { background: var(--primary); } .m-pet { background: var(--primary-dark); } .m-vinyl { background: var(--primary); opacity: .6; }
+.infolist { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); display: flex; flex-direction: column; }
+.info { display: grid; grid-template-columns: 96px 1fr; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--border); font-size: 15px; }
+.info:last-child { border-bottom: 0; }
+.info dt { color: var(--text-sub); font-size: 14px; font-weight: 500; }
+.info dd { margin: 0; min-width: 0; }
+.info dd small { display: block; color: var(--text-sub); font-size: 13px; }
+.call { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.call .num { font-size: 18px; font-weight: 700; user-select: all; }
+.mini { min-height: 36px; padding: 0 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); font-size: 13px; font-weight: 600; }
+
+/* 탭바 */
+.tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 6; background: var(--surface); border-top: 1px solid var(--border); padding-bottom: env(safe-area-inset-bottom, 0px); padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); }
+.tabs-in { max-width: 560px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); }
+/* AI에게 물어보기 */
+.home-top { display: flex; gap: 8px; }
+.home-top .home-search { flex: 1; min-width: 0; }
+.ai-btn { flex: none; display: inline-flex; align-items: center; gap: 6px; height: 52px; padding: 0 14px; border-radius: 14px; border: 0; background: var(--primary); color: var(--on-primary); font-weight: 700; font-size: 15px; }
+.ai-btn svg { width: 20px; height: 20px; }
+.ask-head { display: flex; align-items: center; gap: 4px; }
+.ask-head .back { padding: 0; width: 40px; justify-content: center; flex: none; }
+.ask-head h1 { font-size: 20px; font-weight: 700; }
+.ask-head p { margin: 0; font-size: 13px; color: var(--text-sub); }
+.ask-intro { background: var(--primary-light); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.ask-intro p { margin: 0; font-size: 15px; }
+.ask-intro .quick .qbtn { text-align: left; min-height: 40px; height: auto; padding: 8px 14px; line-height: 1.4; }
+.msgs { display: flex; flex-direction: column; gap: 10px; }
+.msg { max-width: 86%; padding: 10px 14px; border-radius: 16px; font-size: 15px; line-height: 1.6; white-space: pre-wrap; }
+.msg.user { align-self: flex-end; background: var(--primary); color: var(--on-primary); border-bottom-right-radius: 4px; }
+.msg.assistant { align-self: flex-start; background: var(--surface); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
+.msg.pending { color: var(--text-sub); }
+.msg.err { background: var(--warn-light); border-color: transparent; color: var(--warn); }
+.composer { position: sticky; bottom: calc(72px + env(safe-area-inset-bottom, 0px)); display: flex; gap: 8px; align-items: flex-end; background: var(--bg); padding-block: 8px; }
+.composer textarea { flex: 1; min-width: 0; min-height: 48px; max-height: 140px; resize: none; border-radius: 14px; border: 1.5px solid var(--border); background: var(--surface); padding: 12px 14px; font: inherit; font-size: 16px; line-height: 1.4; }
+.composer textarea:focus { outline: none; border-color: var(--primary); }
+.composer .btn { height: 48px; flex: none; }
+.ask-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+/* 카테고리: 왼쪽 분류 목록 + 오른쪽 품목 그리드 */
+main.flush { padding-left: 0; padding-right: 0; padding-top: 0; }
+.catwrap { display: grid; grid-template-columns: 96px minmax(0, 1fr); align-items: start; min-height: calc(100vh - 140px); border-top: 1px solid var(--border); }
+.side { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 70px); max-height: calc(100vh - 150px); overflow-y: auto; background: var(--general-light); display: flex; flex-direction: column; padding-left: env(safe-area-inset-left, 0px); }
+.side button { min-height: 52px; border: 0; background: none; text-align: left; padding: 0 10px 0 14px; font-size: 14px; font-weight: 500; color: var(--text-sub); line-height: 1.3; position: relative; }
+.side button[aria-selected="true"] { background: var(--surface); color: var(--text); font-weight: 700; }
+.side button[aria-selected="true"]::before { content: ""; position: absolute; left: 0; top: 14px; bottom: 14px; width: 3px; border-radius: 0 3px 3px 0; background: var(--primary); }
+.catmain { padding: 16px max(16px, env(safe-area-inset-right, 0px)) 16px 16px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.cathead { display: flex; flex-direction: column; gap: 4px; }
+.cathead h1 { font-size: 20px; font-weight: 700; }
+.cathead p { margin: 0; font-size: 14px; color: var(--text-sub); }
+.cathead p b { color: var(--primary-dark); font-weight: 600; }
+.igrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px 8px; }
+.icell { border: 0; background: none; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 0; font-size: 13px; font-weight: 500; line-height: 1.3; text-align: center; }
+.icircle { width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center; transition: transform .12s; }
+.icircle svg { width: 30px; height: 30px; }
+.icell:hover .icircle { transform: scale(1.05); }
+.ic-recycle { background: var(--primary-light); color: var(--primary-dark); }
+.ic-food { background: var(--food-light); color: var(--food); }
+.ic-general { background: var(--general-light); color: var(--general); }
+.ic-blue { background: var(--bulky-light); color: var(--bulky); }
+@media (max-width: 360px) { .igrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+/* 혜택 */
+.page-head { display: flex; flex-direction: column; gap: 4px; }
+.page-head h1 { font-size: 22px; font-weight: 700; line-height: 1.3; }
+.page-head p { margin: 0; color: var(--text-sub); font-size: 15px; }
+.bcard { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+.bcard-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.bcard h3 { font-size: 17px; font-weight: 700; line-height: 1.4; }
+.tag { flex: none; display: inline-flex; align-items: center; height: 24px; padding: 0 8px; border-radius: 6px; font-size: 12px; font-weight: 600; }
+.tag-nat { color: var(--primary-dark); background: var(--primary-light); }
+.tag-ex { color: var(--warn); background: var(--warn-light); }
+.bdl { margin: 0; display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 6px 10px; font-size: 15px; }
+.bdl dt { color: var(--text-sub); font-size: 14px; font-weight: 500; }
+.bdl dd { margin: 0; }
+.bget { font-weight: 600; color: var(--primary-dark); }
+.blink { align-self: flex-start; display: inline-flex; align-items: center; gap: 4px; min-height: 40px; padding: 0 12px; border-radius: 10px; border: 1px solid var(--border); color: var(--text); text-decoration: none; font-size: 14px; font-weight: 600; }
+.blink:hover { border-color: var(--primary); color: var(--primary-dark); }
+.promo { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; text-align: left; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 14px 16px; }
+.promo:hover { border-color: var(--primary); }
+.promo b { display: block; font-size: 16px; font-weight: 600; }
+.promo span { font-size: 14px; color: var(--text-sub); }
+.promo svg { width: 20px; height: 20px; flex: none; color: var(--text-sub); }
+.mini-benefits { display: flex; flex-direction: column; gap: 8px; }
+.mb { display: flex; justify-content: space-between; align-items: center; gap: 10px; width: 100%; text-align: left; background: var(--primary-light); border: 0; border-radius: 12px; padding: 12px 14px; font-size: 15px; }
+.mb b { font-weight: 600; }
+.mb span { font-size: 13px; color: var(--primary-dark); font-weight: 600; white-space: nowrap; }
+.home-search { display: flex; align-items: center; gap: 10px; width: 100%; height: 52px; border-radius: 14px; border: 1.5px solid var(--border); background: var(--surface); padding: 0 14px; font-size: 16px; color: var(--text-sub); text-align: left; box-shadow: var(--shadow); }
+.home-search:hover { border-color: var(--primary); }
+.home-search svg { width: 20px; height: 20px; flex: none; color: var(--primary); }
+.search-head { display: flex; align-items: center; gap: 4px; }
+.search-head .search-box { flex: 1; min-width: 0; }
+.search-head .back { padding: 0; width: 40px; justify-content: center; flex: none; }
+.tab { min-height: 64px; border: 0; background: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 13px; font-weight: 600; color: var(--text-sub); }
+.tab svg { width: 24px; height: 24px; }
+.tab[aria-selected="true"] { color: var(--primary); }
+
+/* 지역 설정 */
+.setup { position: fixed; inset: 0; z-index: 20; background: var(--bg); overflow-y: auto; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+.setup-in { max-width: 480px; margin: 0 auto; padding-block: 40px 32px; display: flex; flex-direction: column; gap: 22px; }
+.setup h1 { font-size: 26px; font-weight: 700; line-height: 1.3; letter-spacing: -0.02em; }
+.setup .lead { margin: 0; color: var(--text-sub); font-size: 16px; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label { font-size: 14px; font-weight: 600; }
+.field select { height: 52px; border-radius: 12px; border: 1.5px solid var(--border); background: var(--surface); padding: 0 14px; font-size: 16px; }
+.field select:focus { outline: none; border-color: var(--primary); }
+.field select:disabled { opacity: .5; }
+.hint { font-size: 13px; color: var(--text-sub); margin: 0; }
+.setup .btn.primary { height: 54px; font-size: 17px; }
+
+.toast { position: fixed; left: 50%; bottom: calc(84px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--text); color: var(--bg); padding: 10px 16px; border-radius: 10px; font-size: 14px; z-index: 30; }
+@media (prefers-reduced-motion: no-preference) {
+  .view { animation: in .18s ease-out; }
+  @keyframes in { from { transform: translateY(4px); } to { transform: none; } }
+}
+@media (max-width: 380px) {
+  .hero-main { font-size: 24px; }
+  .day { min-height: 96px; }
+}
+</style>
+
+<div class="app">
+  <header class="top wrap">
+    <div class="logo">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 7h14l-1.2 12.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8L5 7Z" fill="var(--primary)"/><path d="M3.5 7h17M9.5 7V4.5h5V7" stroke="var(--primary-dark)" stroke-width="1.8" stroke-linecap="round"/><path d="m9.3 14 2 2 3.6-3.8" stroke="var(--on-primary)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      바로버림
+    </div>
+    <button class="region-btn" id="regionBtn" type="button" aria-label="지역 변경">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21s7-6.1 7-11.5A7 7 0 0 0 5 9.5C5 14.9 12 21 12 21Z" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="9.5" r="2.5" fill="currentColor"/></svg>
+      <span id="regionName">지역 선택</span>
+    </button>
+  </header>
+
+  <main class="wrap" id="main"></main>
+</div>
+
+<nav class="tabs" aria-label="주요 메뉴">
+  <div class="tabs-in" role="tablist">
+    <button class="tab" role="tab" data-tab="today" type="button">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="3" stroke="currentColor" stroke-width="2"/><path d="M3.5 10h17M8 3v4M16 3v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="15" r="2" fill="currentColor"/></svg>
+      홈
+    </button>
+    <button class="tab" role="tab" data-tab="category" type="button">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5" stroke="currentColor" stroke-width="2"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5" stroke="currentColor" stroke-width="2"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5" stroke="currentColor" stroke-width="2"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5" stroke="currentColor" stroke-width="2"/></svg>
+      카테고리
+    </button>
+    <button class="tab" role="tab" data-tab="benefit" type="button">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4" y="9" width="16" height="11.5" rx="2" stroke="currentColor" stroke-width="2"/><path d="M3 9h18M12 9v11.5M12 9c-1.5-3.5-5.5-4.5-5.5-2S10 9 12 9Zm0 0c1.5-3.5 5.5-4.5 5.5-2S14 9 12 9Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+      혜택
+    </button>
+    <button class="tab" role="tab" data-tab="local" type="button">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 10.5 12 4l8 6.5V19a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 19v-8.5Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 20.5v-6h5v6" stroke="currentColor" stroke-width="2"/></svg>
+      우리동네
+    </button>
+  </div>
+</nav>
+
+<div class="setup" id="setup" hidden>
+  <div class="setup-in wrap">
+    <div class="logo">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 7h14l-1.2 12.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8L5 7Z" fill="var(--primary)"/><path d="M3.5 7h17M9.5 7V4.5h5V7" stroke="var(--primary-dark)" stroke-width="1.8" stroke-linecap="round"/><path d="m9.3 14 2 2 3.6-3.8" stroke="var(--on-primary)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      바로버림
+    </div>
+    <h1>어느 동네 기준으로<br>알려드릴까요?</h1>
+    <p class="lead">배출 요일과 장소는 동네마다 달라요. 한 번만 고르면 다음부터 바로 보여드려요.</p>
+    <div class="field">
+      <label for="selSido">시·도</label>
+      <select id="selSido"></select>
+    </div>
+    <div class="field">
+      <label for="selGu">시·군·구</label>
+      <select id="selGu" disabled></select>
+    </div>
+    <div class="field">
+      <label for="selDong">읍·면·동</label>
+      <select id="selDong" disabled></select>
+      <p class="hint" id="dongHint"></p>
+    </div>
+    <button class="btn primary" id="saveRegion" type="button" disabled>이 동네로 시작하기</button>
+    <button class="btn" id="cancelSetup" type="button" hidden>취소</button>
+    <p class="sample">지금은 시연용 예시 지역 6곳만 들어 있어요. 요일·장소는 실제 구청 공지와 다를 수 있어요.</p>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ───────── 데이터 ───────── */
+  // 지역 규칙: 시연용 예시 데이터. 실제 서비스는 공공데이터포털 생활쓰레기 배출정보 표준데이터를 정제해 교체.
+  var DAYS = ["일", "월", "화", "수", "목", "금", "토"];
+  var GROUPS = {
+    general: { label: "일반쓰레기", chip: "c-general", bar: "b-general", mark: "m-general" },
+    food:    { label: "음식물",     chip: "c-food",    bar: "b-food",    mark: "m-food" },
+    recycle: { label: "재활용",     chip: "c-recycle", bar: "b-recycle", mark: "m-recycle" },
+    pet:     { label: "투명페트병", chip: "c-recycle", bar: "b-pet",     mark: "m-pet" },
+    vinyl:   { label: "비닐",       chip: "c-recycle", bar: "b-vinyl",   mark: "m-vinyl" }
+  };
+  var ORDER = ["general", "food", "recycle", "pet", "vinyl"];
+
+  var REGIONS = [
+    { id: "seoul-jongno-sajik", site: "https://www.jongno.go.kr", siteLabel: "종로구청", sido: "서울특별시", gu: "종로구", dong: "사직동", level: "동",
+      dept: "종로구청 청소행정과", phone: "120", phoneNote: "서울 다산콜센터에서 구청 담당 부서로 연결",
+      updated: "2026-10-01", offDays: "토요일, 설·추석 당일",
+      rules: {
+        general: { days: [0,1,2,3,4], time: "19:00~24:00", place: "집 앞 또는 건물 앞 지정 장소", bag: "종로구 종량제 봉투(일반용)" },
+        food:    { days: [0,1,2,3,4], time: "19:00~24:00", place: "음식물 전용 수거 용기", bag: "음식물 납부필증 부착 용기" },
+        recycle: { days: [0,2,4],     time: "19:00~24:00", place: "집 앞, 일반쓰레기와 떨어진 곳", bag: "투명 비닐봉지에 종류별로" },
+        pet:     { days: [3],         time: "19:00~24:00", place: "집 앞", bag: "투명 봉투에 투명페트병만" }
+      } },
+    { id: "seoul-jongno-cheongun", site: "https://www.jongno.go.kr", siteLabel: "종로구청", sido: "서울특별시", gu: "종로구", dong: "청운효자동", level: "동",
+      dept: "종로구청 청소행정과", phone: "120", phoneNote: "서울 다산콜센터에서 구청 담당 부서로 연결",
+      updated: "2026-10-01", offDays: "토요일, 설·추석 당일",
+      rules: {
+        general: { days: [0,1,2,3,4], time: "19:00~24:00", place: "골목 입구 지정 장소", bag: "종로구 종량제 봉투(일반용)" },
+        food:    { days: [0,1,2,3,4], time: "19:00~24:00", place: "음식물 전용 수거 용기", bag: "음식물 납부필증 부착 용기" },
+        recycle: { days: [1,3,5],     time: "19:00~24:00", place: "골목 입구, 일반쓰레기와 떨어진 곳", bag: "투명 비닐봉지에 종류별로" },
+        pet:     { days: [4],         time: "19:00~24:00", place: "골목 입구", bag: "투명 봉투에 투명페트병만" }
+      } },
+    { id: "seoul-mapo-seogyo", site: "https://www.mapo.go.kr", siteLabel: "마포구청", sido: "서울특별시", gu: "마포구", dong: "서교동", level: "동",
+      dept: "마포구청 자원순환과", phone: "120", phoneNote: "서울 다산콜센터에서 구청 담당 부서로 연결",
+      updated: "2026-09-15", offDays: "토요일, 설·추석 당일",
+      rules: {
+        general: { days: [0,1,2,3,4], time: "18:00~24:00", place: "집 앞 또는 건물 앞", bag: "마포구 종량제 봉투(일반용)" },
+        food:    { days: [0,1,2,3,4], time: "18:00~24:00", place: "음식물 전용 수거 용기", bag: "음식물 납부필증 부착 용기" },
+        recycle: { days: [0,1,2,3,4], time: "18:00~24:00", place: "집 앞, 종류별로 묶어서", bag: "투명 비닐봉지" },
+        vinyl:   { days: [2],         time: "18:00~24:00", place: "집 앞", bag: "투명 봉투에 비닐만" },
+        pet:     { days: [4],         time: "18:00~24:00", place: "집 앞", bag: "투명 봉투에 투명페트병만" }
+      } },
+    { id: "gyeonggi-suwon-maetan", site: "https://www.suwon.go.kr", siteLabel: "수원시청 (영통구 포함)", sido: "경기도", gu: "수원시 영통구", dong: "매탄동", level: "동",
+      dept: "영통구청 환경위생과", phone: "031-120", phoneNote: "경기도 콜센터",
+      updated: "2026-08-20", offDays: "토요일",
+      rules: {
+        general: { days: [0,2,4],     time: "18:00~24:00", place: "단독·빌라: 집 앞 / 아파트: 단지 수거장", bag: "수원시 종량제 봉투" },
+        food:    { days: [0,1,2,3,4], time: "18:00~24:00", place: "음식물 전용 용기 또는 단지 수거함", bag: "수원시 음식물 전용 봉투" },
+        recycle: { days: [1,3,5],     time: "18:00~24:00", place: "집 앞 또는 단지 수거장", bag: "투명 비닐봉지에 종류별로" }
+      } },
+    { id: "busan-haeundae-u", site: "https://www.haeundae.go.kr", siteLabel: "해운대구청", sido: "부산광역시", gu: "해운대구", dong: "우동", level: "동",
+      dept: "해운대구청 자원순환과", phone: "051-120", phoneNote: "부산시 콜센터",
+      updated: "2026-07-30", offDays: "토요일, 명절 당일",
+      rules: {
+        general: { days: [0,1,2,3,4], time: "20:00~24:00", place: "집 앞 지정 장소", bag: "해운대구 종량제 봉투" },
+        food:    { days: [0,1,2,3,4], time: "20:00~24:00", place: "단독주택 전용 용기 / 아파트 음식물 수거기", bag: "전용 용기" },
+        recycle: { days: [1,3],       time: "20:00~24:00", place: "집 앞 지정 장소", bag: "투명 비닐봉지에 종류별로" }
+      } },
+    { id: "daegu-jung", site: "https://www.jung.daegu.kr", siteLabel: "대구 중구청", sido: "대구광역시", gu: "중구", dong: null, level: "시군구",
+      dept: "대구 중구청 환경자원과", phone: "053-120", phoneNote: "대구시 콜센터",
+      updated: "2026-06-30", offDays: "토요일",
+      rules: {
+        general: { days: [0,1,2,3,4], time: "18:00~24:00", place: "집 앞 지정 장소", bag: "중구 종량제 봉투" },
+        food:    { days: [0,1,2,3,4], time: "18:00~24:00", place: "음식물 전용 용기", bag: "음식물 전용 봉투" },
+        recycle: { days: [0,2,4],     time: "18:00~24:00", place: "집 앞, 종류별로 묶어서", bag: "투명 비닐봉지" }
+      } }
+  ];
+
+  // 품목 분류 → 배출 그룹
+  var CATS = {
+    paper:   { label: "종이",       group: "recycle" },
+    pack:    { label: "종이팩",     group: "recycle" },
+    plastic: { label: "플라스틱",   group: "recycle" },
+    pet:     { label: "투명페트병", group: "pet" },
+    vinyl:   { label: "비닐",       group: "vinyl" },
+    styro:   { label: "스티로폼",   group: "recycle" },
+    can:     { label: "캔·고철",    group: "recycle" },
+    glass:   { label: "유리병",     group: "recycle" },
+    general: { label: "일반쓰레기", group: "general" },
+    nonflam: { label: "불연성",     group: "general" },
+    food:    { label: "음식물",     group: "food" },
+    bulky:   { label: "대형폐기물", group: "bulky" },
+    special: { label: "전용 수거함", group: "special" }
+  };
+
+  // 품목 사전: 환경부 재활용품 분리배출 가이드라인 기준으로 정리
+  var ITEMS = [
+    { id: "pet-clear", name: "투명 페트병", aliases: ["생수병", "물병", "음료 페트병", "페트"], cat: "pet",
+      steps: ["내용물을 비우고 물로 헹궈요", "겉면 비닐 라벨을 떼요", "찌그러뜨려 부피를 줄이고 뚜껑을 닫아요", "다른 플라스틱과 섞지 말고 따로 내놔요"],
+      myth: "라벨이 붙은 채로 내놓으면 고품질 재활용이 어려워요. 절취선이 없으면 가위로 잘라 떼요." },
+    { id: "pet-color", name: "색깔 있는 페트병", aliases: ["유색 페트병", "음료수병", "콜라병"], cat: "plastic",
+      steps: ["내용물을 비우고 헹궈요", "라벨을 떼요", "플라스틱으로 내놔요"],
+      myth: "색이 들어간 페트병은 투명페트병 수거함이 아니라 일반 플라스틱으로 버려요." },
+    { id: "plastic-delivery", name: "배달 플라스틱 용기", aliases: ["배달용기", "반찬통", "도시락 용기", "일회용 용기"], cat: "plastic",
+      steps: ["남은 음식을 비워요", "세제로 한 번 씻어 기름기를 없애요", "플라스틱으로 내놔요"],
+      myth: "씻어도 빨간 양념 물이 안 빠지면 재활용이 안 돼요. 그때는 일반쓰레기로 버려요." },
+    { id: "cosmetic", name: "화장품 용기", aliases: ["로션통", "샴푸통", "펌프용기"], cat: "plastic",
+      steps: ["내용물을 최대한 비우고 헹궈요", "펌프 부분은 분리해서 일반쓰레기로 버려요", "몸통은 재질 표시를 보고 플라스틱 또는 유리로 내놔요"],
+      myth: "펌프 안에는 금속 스프링이 있어서 플라스틱으로 버리면 안 돼요." },
+    { id: "styro-box", name: "스티로폼 상자", aliases: ["스티로폼", "아이스박스", "완충재", "발포스티렌"], cat: "styro",
+      steps: ["테이프, 운송장, 스티커를 모두 떼요", "내용물을 비우고 깨끗한 상태로 내놔요", "부피가 크면 그대로, 작으면 모아서 투명 봉투에 담아요"],
+      myth: "색깔 있는 스티로폼이나 음식물이 밴 스티로폼은 일반쓰레기예요." },
+    { id: "cupramen", name: "컵라면 용기", aliases: ["컵라면", "라면 용기"], cat: "styro",
+      steps: ["국물을 비우고 헹궈요", "깨끗하면 스티로폼이나 재질에 맞게 내놔요", "빨간 국물 자국이 남으면 일반쓰레기로 버려요"],
+      myth: "종이 재질 컵라면 용기는 안쪽이 코팅되어 있어 종이가 아니라 일반쓰레기로 버리는 지역이 많아요." },
+    { id: "vinyl-bag", name: "비닐봉지", aliases: ["비닐", "봉지", "과자봉지", "라면봉지", "택배 비닐"], cat: "vinyl",
+      steps: ["내용물을 털어 비워요", "음식물이 묻었으면 헹궈요", "여러 장 모아서 투명 봉투에 담아 내놔요"],
+      myth: "이물질이 씻기지 않는 비닐은 일반쓰레기예요." },
+    { id: "bubble", name: "뽁뽁이", aliases: ["에어캡", "버블랩", "완충 비닐"], cat: "vinyl",
+      steps: ["붙어 있는 테이프와 스티커를 떼요", "비닐로 내놔요"] },
+    { id: "wrap", name: "랩", aliases: ["주방랩", "비닐랩", "음식 랩"], cat: "general",
+      steps: ["음식물이 묻은 랩은 일반쓰레기로 버려요"],
+      myth: "랩은 얇고 이물질이 잘 붙어서 대부분 재활용이 안 돼요." },
+    { id: "box", name: "택배 상자", aliases: ["박스", "골판지", "종이박스", "상자"], cat: "paper",
+      steps: ["테이프와 운송장을 모두 떼요", "상자를 납작하게 펼쳐요", "다른 종이와 함께 묶어서 내놔요"],
+      myth: "운송장은 코팅·감열지라 종이가 아니에요. 개인정보도 있으니 떼어서 일반쓰레기로 버려요." },
+    { id: "newspaper", name: "신문·책", aliases: ["신문지", "책", "공책", "잡지", "노트"], cat: "paper",
+      steps: ["스프링, 비닐 표지, 테이프를 떼요", "물에 젖지 않게 끈으로 묶어서 내놔요"] },
+    { id: "pizza", name: "치킨·피자 상자", aliases: ["피자박스", "치킨박스"], cat: "paper",
+      steps: ["남은 음식과 소스를 비워요", "기름이 심하게 밴 부분은 찢어서 일반쓰레기로 버려요", "깨끗한 부분만 종이로 내놔요"],
+      myth: "기름에 젖은 종이는 재활용 과정에서 다른 종이까지 망쳐요." },
+    { id: "receipt", name: "영수증", aliases: ["카드 영수증", "감열지", "번호표"], cat: "general",
+      steps: ["일반쓰레기로 버려요"],
+      myth: "영수증은 종이처럼 보이지만 감열지라 재활용이 안 돼요." },
+    { id: "milk", name: "우유팩", aliases: ["종이팩", "두유팩", "주스팩", "멸균팩"], cat: "pack",
+      steps: ["내용물을 비우고 헹궈요", "펼쳐서 말려요", "일반 종이와 섞지 말고 종이팩끼리 따로 묶어 내놔요"],
+      myth: "종이팩은 고급 펄프라 일반 종이와 섞으면 재활용 가치가 떨어져요. 주민센터에서 휴지로 바꿔주는 곳도 있어요." },
+    { id: "papercup", name: "종이컵", aliases: ["일회용 컵", "커피컵"], cat: "pack",
+      steps: ["남은 음료를 비우고 헹궈요", "플라스틱 뚜껑과 컵홀더는 분리해요", "종이팩과 함께 따로 내놔요"] },
+    { id: "can", name: "음료 캔", aliases: ["캔", "맥주캔", "콜라캔", "참치캔", "통조림"], cat: "can",
+      steps: ["내용물을 비우고 헹궈요", "가능하면 납작하게 눌러요", "캔류로 내놔요"],
+      myth: "참치캔처럼 기름이 있는 캔은 꼭 헹궈야 해요." },
+    { id: "butane", name: "부탄가스", aliases: ["가스통", "휴대용 가스", "스프레이"], cat: "can",
+      steps: ["바람이 잘 통하는 곳에서 남은 가스를 끝까지 빼요", "구멍을 뚫어 남은 가스를 완전히 없애요", "캔류로 내놔요"],
+      myth: "가스가 남은 채로 버리면 수거차 압축 과정에서 화재가 날 수 있어요." },
+    { id: "pan", name: "프라이팬·냄비", aliases: ["후라이팬", "냄비", "주전자"], cat: "can",
+      steps: ["플라스틱 손잡이를 분리할 수 있으면 떼요", "고철로 내놔요"] },
+    { id: "glass", name: "유리병", aliases: ["소주병", "맥주병", "음료병", "잼병", "양념병"], cat: "glass",
+      steps: ["뚜껑을 분리해요", "내용물을 비우고 헹궈요", "유리병으로 내놔요"],
+      myth: "소주병·맥주병은 마트나 편의점에 가져가면 빈용기 보증금을 돌려받을 수 있어요." },
+    { id: "broken-glass", name: "깨진 유리", aliases: ["유리 조각", "깨진 컵", "유리컵"], cat: "nonflam",
+      steps: ["신문지 등으로 두껍게 감싸요", "'깨진 유리' 라고 써서 종량제 봉투에 넣어요", "양이 많으면 불연성 쓰레기 마대(특수규격 봉투)를 사서 담아요"],
+      myth: "깨진 유리나 유리컵은 유리병 재활용이 아니에요. 녹는 온도가 달라서 섞이면 안 돼요." },
+    { id: "ceramic", name: "도자기·뚝배기", aliases: ["그릇", "사기그릇", "뚝배기", "화분"], cat: "nonflam",
+      steps: ["작으면 감싸서 종량제 봉투에 넣어요", "양이 많으면 불연성 쓰레기 마대에 담아요"] },
+    { id: "icepack", name: "아이스팩", aliases: ["얼음팩", "보냉팩", "냉매"], cat: "general",
+      steps: ["젤 형태는 뜯지 말고 그대로 종량제 봉투에 버려요", "물만 든 아이스팩은 물을 버리고 비닐은 비닐로 내놔요"],
+      myth: "젤 아이스팩을 하수구에 버리면 안 돼요. 주민센터에 아이스팩 수거함이 있는 곳도 있어요." },
+    { id: "tissue", name: "휴지·물티슈", aliases: ["휴지", "물티슈", "키친타월", "냅킨"], cat: "general",
+      steps: ["일반쓰레기로 버려요"],
+      myth: "물티슈는 플라스틱 섬유라 변기에 버리면 안 돼요." },
+    { id: "mask", name: "마스크", aliases: ["일회용 마스크", "KF94"], cat: "general",
+      steps: ["끈을 잘라 접어요", "일반쓰레기로 버려요"] },
+    { id: "toothbrush", name: "칫솔", aliases: ["치약", "볼펜", "펜"], cat: "general",
+      steps: ["여러 재질이 섞여 있어 일반쓰레기로 버려요"] },
+    { id: "rubber-glove", name: "고무장갑", aliases: ["장갑", "목장갑"], cat: "general",
+      steps: ["일반쓰레기로 버려요"] },
+    { id: "chopsticks", name: "나무젓가락", aliases: ["젓가락", "이쑤시개", "아이스크림 막대"], cat: "general",
+      steps: ["일반쓰레기로 버려요"] },
+    { id: "straw", name: "빨대", aliases: ["플라스틱 빨대"], cat: "general",
+      steps: ["크기가 작아 선별이 안 되니 일반쓰레기로 버려요"] },
+    { id: "lighter", name: "일회용 라이터", aliases: ["라이터"], cat: "general",
+      steps: ["가스를 다 쓴 뒤 일반쓰레기로 버려요"] },
+    { id: "food-general", name: "남은 음식", aliases: ["음식물", "밥", "반찬", "국"], cat: "food",
+      steps: ["국물과 물기를 최대한 빼요", "이쑤시개, 비닐, 뼈 같은 이물질을 골라내요", "음식물 전용 용기나 봉투에 담아요"],
+      myth: "음식물 쓰레기는 동물 사료·퇴비가 될 수 있는 것만 넣어요. 짠 국물은 꼭 빼요." },
+    { id: "fruit-peel", name: "과일 껍질", aliases: ["귤껍질", "사과껍질", "바나나껍질", "수박껍질"], cat: "food",
+      steps: ["큰 껍질은 잘게 잘라요", "음식물로 버려요"],
+      myth: "단단한 씨(복숭아·자두·감 씨)와 파인애플 껍질처럼 딱딱한 건 일반쓰레기예요." },
+    { id: "chicken-bone", name: "닭뼈", aliases: ["뼈", "생선뼈", "갈비뼈", "족발뼈"], cat: "general",
+      steps: ["살코기를 떼어내요", "뼈는 일반쓰레기로 버려요"],
+      myth: "뼈는 동물 사료로 쓸 수 없어서 음식물이 아니에요." },
+    { id: "egg-shell", name: "달걀 껍데기", aliases: ["계란껍질", "달걀껍질", "메추리알 껍데기"], cat: "general",
+      steps: ["일반쓰레기로 버려요"] },
+    { id: "shell", name: "조개·게 껍데기", aliases: ["조개껍질", "게껍질", "굴껍데기", "소라"], cat: "general",
+      steps: ["일반쓰레기로 버려요"] },
+    { id: "onion", name: "양파·마늘 껍질", aliases: ["양파껍질", "마늘껍질", "옥수수 껍질", "대파 뿌리"], cat: "general",
+      steps: ["일반쓰레기로 버려요"],
+      myth: "채소 껍질이라도 질기고 마른 껍질과 뿌리는 음식물이 아니에요." },
+    { id: "coffee", name: "커피 찌꺼기", aliases: ["원두 찌꺼기", "커피박", "티백", "녹차 티백"], cat: "general",
+      steps: ["물기를 빼요", "일반쓰레기로 버려요"] },
+    { id: "battery", name: "건전지", aliases: ["배터리", "폐건전지", "AA 건전지"], cat: "special",
+      steps: ["주민센터·아파트·마트의 폐건전지 수거함에 넣어요", "리튬 배터리는 양극에 테이프를 붙여요"],
+      myth: "건전지를 종량제 봉투에 넣으면 화재 위험이 있어요." },
+    { id: "fluorescent", name: "형광등", aliases: ["전구", "형광램프"], cat: "special",
+      steps: ["깨지지 않게 그대로 둬요", "주민센터·아파트의 폐형광등 수거함에 넣어요"],
+      myth: "형광등엔 수은이 있어서 깨뜨려 버리면 안 돼요." },
+    { id: "medicine", name: "폐의약품", aliases: ["약", "알약", "물약", "유통기한 지난 약"], cat: "special",
+      steps: ["알약은 포장을 벗겨 한 봉투에 모아요", "물약은 한 병에 모아요", "약국·보건소·주민센터 폐의약품 수거함에 넣어요"] },
+    { id: "clothes", name: "헌 옷", aliases: ["옷", "의류", "신발", "가방", "이불"], cat: "special",
+      steps: ["입을 수 있는 옷·신발·가방은 의류수거함에 넣어요", "찢어지거나 오염된 옷, 속옷은 종량제 봉투에 버려요"],
+      myth: "이불·베개는 의류수거함에 안 받는 곳이 많아요. 크면 대형폐기물로 신고해요." },
+    { id: "small-appliance", name: "소형 가전", aliases: ["드라이기", "전기밥솥", "선풍기", "휴대폰", "충전기"], cat: "special",
+      steps: ["주민센터 등의 소형 폐가전 수거함에 넣어요", "5개 이상 모이면 폐가전 무상방문수거 서비스로 신청할 수 있어요"] },
+    { id: "big-appliance", name: "대형 가전", aliases: ["냉장고", "세탁기", "에어컨", "TV", "텔레비전"], cat: "special",
+      steps: ["폐가전제품 무상방문수거 서비스(전화 1599-0903 또는 홈페이지)로 예약해요", "수거일에 집 앞에서 가져가요"],
+      myth: "대형 가전은 대형폐기물 스티커 없이 무료로 수거돼요." },
+    { id: "furniture", name: "가구", aliases: ["의자", "책상", "침대", "소파", "매트리스", "옷장"], cat: "bulky",
+      steps: ["구청 홈페이지나 주민센터에서 대형폐기물 배출 신고를 해요", "수수료를 내고 신고필증(스티커)을 받아요", "필증을 붙여 정해진 날 지정 장소에 내놔요"] }
+  ];
+
+  // 전국 공통 혜택 (실제 운영 중인 제도. 금액·한도는 바뀔 수 있어 화면엔 적지 않음)
+  var BENEFITS = [
+    { id: "cpoint", title: "탄소중립포인트 녹색생활 실천", give: "회수기로 투명페트병·캔 배출, 다회용기·텀블러 이용 등", get: "포인트 적립 후 현금 등으로 지급 (연간 한도 있음)",
+      where: "전국 · 홈페이지에서 회원가입 후 참여", items: ["pet-clear", "can", "plastic-delivery", "papercup"], link: "https://www.cpoint.or.kr", linkLabel: "탄소중립포인트 홈페이지" },
+    { id: "robot", title: "재활용품 회수기 (네프론 등)", give: "투명페트병, 음료 캔", get: "1개마다 포인트 적립, 모이면 현금 전환",
+      where: "주민센터·공원·마트 앞 등에 설치된 회수기 · 위치는 수퍼빈 앱에서 확인", items: ["pet-clear", "can"], link: "https://www.superbin.co.kr", linkLabel: "수퍼빈 홈페이지" },
+    { id: "deposit", title: "빈용기 보증금 돌려받기", give: "소주병·맥주병 등 보증금 표시가 있는 유리병", get: "병마다 보증금 현금 환급",
+      where: "그 병을 파는 마트·편의점", items: ["glass"], link: "https://www.cosmo.or.kr", linkLabel: "순환자원유통지원센터" },
+    { id: "appliance", title: "폐가전 무상방문수거", give: "냉장고·세탁기 등 대형 가전, 소형 가전 5개 이상", get: "수거 무료 (대형폐기물 수수료가 안 들어요)",
+      where: "전국 · 전화 1599-0903 또는 홈페이지 예약", items: ["big-appliance", "small-appliance"], link: "https://www.15990903.or.kr", linkLabel: "폐가전 무상방문수거" }
+  ];
+  // 우리 동네 혜택: 시연용 예시. 실제로는 구청·주민센터 공지를 모아서 지역별로 입력
+  function localBenefits(r) {
+    var place = r.dong ? r.dong + " 주민센터" : r.gu + " 각 동 주민센터";
+    return [
+      { id: "local-milk", title: "우유팩 → 화장지 교환", give: "씻어서 펼쳐 말린 우유팩 (정해진 무게 이상)", get: "화장지", where: place, items: ["milk", "papercup"], local: true },
+      { id: "local-battery", title: "폐건전지 → 새 건전지 교환", give: "다 쓴 건전지 (정해진 개수 이상)", get: "새 건전지", where: place, items: ["battery"], local: true },
+      { id: "local-icepack", title: "아이스팩 수거함", give: "깨끗한 아이스팩", get: "동네 가게에서 재사용 (보상 없음)", where: place + " 수거함", items: ["icepack"], local: true }
+    ];
+  }
+  function benefitsFor(itemId, r) {
+    return localBenefits(r).concat(BENEFITS).filter(function (b) { return b.items.indexOf(itemId) > -1; });
+  }
+
+  /* ───────── 상태 ───────── */
+  var store = {
+    get: function (k, d) { try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+    set: function (k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  };
+  var state = {
+    tab: "today",
+    regionId: store.get("bb.region", null),
+    query: "",
+    detail: null,
+    cat: "paper",
+    weekSel: 0,
+    chat: [],
+    asking: false,
+    draft: "",
+    recent: store.get("bb.recent", [])
+  };
+  // 첫 화면이 비어 있지 않도록: 저장된 지역이 없으면 설정 화면을 띄우되 뒤에는 예시 지역으로 채워 둠
+  var firstVisit = !state.regionId || !findRegion(state.regionId);
+  if (firstVisit) state.regionId = REGIONS[0].id;
+
+  function findRegion(id) { for (var i = 0; i < REGIONS.length; i++) if (REGIONS[i].id === id) return REGIONS[i]; return null; }
+  function region() { return findRegion(state.regionId) || REGIONS[0]; }
+  function regionLabel(r, short) {
+    if (short) return r.dong ? r.gu.split(" ").pop() + " " + r.dong : r.gu;
+    return r.sido + " " + r.gu + (r.dong ? " " + r.dong : "");
+  }
+
+  /* ───────── 유틸 ───────── */
+  var $ = function (s, el) { return (el || document).querySelector(s); };
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]; }); }
+  function daysText(days) {
+    if (!days || !days.length) return "-";
+    if (days.length === 7) return "매일";
+    var s = days.slice().sort().join(",");
+    if (s === "0,1,2,3,4") return "일~목";
+    if (s === "1,2,3,4,5") return "월~금";
+    return days.slice().sort(function (a, b) { return ((a + 6) % 7) - ((b + 6) % 7); }).map(function (d) { return DAYS[d]; }).join("·");
+  }
+  function groupFor(cat, r) {
+    var g = CATS[cat].group;
+    if ((g === "pet" || g === "vinyl") && !r.rules[g]) return "recycle";
+    return g;
+  }
+  function nextDay(days, from) {
+    for (var i = 0; i < 7; i++) { var d = (from + i) % 7; if (days.indexOf(d) > -1) return i; }
+    return -1;
+  }
+  function relDay(offset, dayIdx) {
+    if (offset === 0) return "오늘";
+    if (offset === 1) return "내일";
+    return DAYS[dayIdx] + "요일";
+  }
+
+  // 한글 초성
+  var CHO = ["ㄱ","ㄲ","ㄴ","ㄷ","ㄸ","ㄹ","ㅁ","ㅂ","ㅃ","ㅅ","ㅆ","ㅇ","ㅈ","ㅉ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"];
+  function chosung(s) {
+    var out = "";
+    for (var i = 0; i < s.length; i++) {
+      var c = s.charCodeAt(i) - 0xAC00;
+      out += (c >= 0 && c <= 11171) ? CHO[Math.floor(c / 588)] : s[i];
+    }
+    return out;
+  }
+  function isChoOnly(s) { return /^[ㄱ-ㅎ]+$/.test(s); }
+  function norm(s) { return s.toLowerCase().replace(/\s+/g, ""); }
+  function lev(a, b) {
+    if (Math.abs(a.length - b.length) > 1) return 9;
+    var m = [], i, j;
+    for (i = 0; i <= a.length; i++) m[i] = [i];
+    for (j = 0; j <= b.length; j++) m[0][j] = j;
+    for (i = 1; i <= a.length; i++) for (j = 1; j <= b.length; j++)
+      m[i][j] = Math.min(m[i-1][j] + 1, m[i][j-1] + 1, m[i-1][j-1] + (a[i-1] === b[j-1] ? 0 : 1));
+    return m[a.length][b.length];
+  }
+  function search(q) {
+    q = norm(q);
+    if (!q) return [];
+    var cho = isChoOnly(q), scored = [];
+    ITEMS.forEach(function (it) {
+      var names = [it.name].concat(it.aliases).map(norm), best = 0;
+      names.forEach(function (n, idx) {
+        var w = idx === 0 ? 1 : 0.9, s = 0;
+        if (cho) { if (chosung(n).indexOf(q) > -1) s = 60; }
+        else if (n === q) s = 100;
+        else if (n.indexOf(q) === 0) s = 85;
+        else if (n.indexOf(q) > -1) s = 70;
+        else if (q.length >= 2 && lev(n, q) <= 1) s = 55;
+        else if (q.length >= 3 && q.indexOf(n) > -1) s = 50;
+        best = Math.max(best, s * w);
+      });
+      if (best > 0) scored.push({ it: it, s: best });
+    });
+    scored.sort(function (a, b) { return b.s - a.s; });
+    return scored.map(function (x) { return x.it; });
+  }
+  function matchedAlias(it, q) {
+    q = norm(q);
+    if (!q || norm(it.name).indexOf(q) > -1) return "";
+    for (var i = 0; i < it.aliases.length; i++) if (norm(it.aliases[i]).indexOf(q) > -1 || chosung(norm(it.aliases[i])).indexOf(q) > -1) return it.aliases[i];
+    return "";
+  }
+  function toast(msg) {
+    var t = document.createElement("div"); t.className = "toast"; t.textContent = msg; t.setAttribute("role", "status");
+    document.body.appendChild(t); setTimeout(function () { t.remove(); }, 1800);
+  }
+  function chipFor(cat) {
+    var g = CATS[cat].group;
+    var cls = g === "bulky" ? "c-bulky" : g === "special" ? "c-special" : (GROUPS[g] ? GROUPS[g].chip : "c-general");
+    return '<span class="chip ' + cls + '">' + esc(CATS[cat].label) + "</span>";
+  }
+
+  /* ───────── 화면: 오늘 ───────── */
+  function renderToday() {
+    var r = region(), now = new Date(), d = now.getDay();
+    var keys = ORDER.filter(function (k) { return r.rules[k]; });
+    var todayKeys = keys.filter(function (k) { return r.rules[k].days.indexOf(d) > -1; });
+    var tomorrowKeys = keys.filter(function (k) { return r.rules[k].days.indexOf((d + 1) % 7) > -1; });
+    var dateStr = (now.getMonth() + 1) + "월 " + now.getDate() + "일 " + DAYS[d] + "요일";
+    var time = todayKeys.length ? r.rules[todayKeys[0]].time : "";
+
+    var html = '<div class="view">';
+    html += '<div class="home-top">';
+    html += '<button class="home-search" type="button" id="homeSearch" aria-label="품목 검색 열기"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="6.5" stroke="currentColor" stroke-width="2"/><path d="m16 16 4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>버릴 물건을 검색해 보세요</button>';
+    html += '<button class="ai-btn" type="button" data-goto="ask" aria-label="AI에게 물어보기"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 5h14a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1h-7l-4 3.5V16H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 10.5h.01M12 10.5h.01M15 10.5h.01" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>AI</button></div>';
+    html += '<p class="date">' + dateStr + " · " + esc(regionLabel(r, true)) + " 기준</p>";
+    html += '<section class="hero" aria-labelledby="heroTitle">';
+    if (todayKeys.length) {
+      html += '<span class="hero-label" id="heroTitle">오늘 내놓을 수 있어요</span>';
+      html += '<div class="hero-main">' + todayKeys.map(function (k) { return GROUPS[k].label; }).join(" · ") + "</div>";
+      html += '<div class="hero-time">' + esc(time) + " 사이에 내놓으세요</div>";
+    } else {
+      html += '<span class="hero-label" id="heroTitle">오늘은 배출하는 날이 아니에요</span>';
+      html += '<div class="hero-main none">' + (tomorrowKeys.length ? "내일 " + tomorrowKeys.map(function (k) { return GROUPS[k].label; }).join(" · ") + " 배출" : "다음 배출일까지 집에 보관해 주세요") + "</div>";
+      html += '<div class="hero-time">미수거일: ' + esc(r.offDays) + "</div>";
+    }
+    html += "</section>";
+
+    html += '<section class="section"><h2>분류별 다음 배출일</h2><div class="cards">';
+    keys.forEach(function (k) {
+      var rule = r.rules[k], off = nextDay(rule.days, d);
+      var when = off < 0 ? "-" : relDay(off, (d + off) % 7);
+      html += '<div class="gcard"><span class="chip ' + GROUPS[k].chip + '">' + GROUPS[k].label + "</span>" +
+        "<b>" + when + (off === 0 ? " 배출" : "") + " <span style=\"font-weight:400;color:var(--text-sub);font-size:14px\">(" + daysText(rule.days) + ")</span></b>" +
+        "<p>" + esc(rule.time) + " · " + esc(rule.bag) + "</p></div>";
+    });
+    html += "</div></section>";
+
+    html += '<section class="section"><h2>이번 주 배출 달력</h2><div class="week">';
+    for (var i = 0; i < 7; i++) {
+      var dd = new Date(now); dd.setDate(now.getDate() + i);
+      var di = dd.getDay(), ks = keys.filter(function (k) { return r.rules[k].days.indexOf(di) > -1; });
+      html += '<button type="button" data-wday="' + i + '" aria-pressed="' + (i === state.weekSel) + '" aria-label="' + (dd.getMonth() + 1) + "월 " + dd.getDate() + "일 세부정보" + '" class="day' + (i === 0 ? " today" : "") + (i === state.weekSel ? " sel" : "") + (di === 0 ? " sun" : "") + '"><div class="d">' + (i === 0 ? "오늘" : DAYS[di]) + "<strong>" + dd.getDate() + "</strong></div>";
+      html += ks.length ? '<div class="dots">' + ks.map(function (k) { return '<span class="bar ' + GROUPS[k].bar + '" title="' + GROUPS[k].label + '"></span>'; }).join("") + "</div>" : '<span class="noday">수거 없음</span>';
+      html += "</button>";
+    }
+    html += '</div><div class="legend">' + keys.map(function (k) { return '<span><i class="' + GROUPS[k].bar + '"></i>' + GROUPS[k].label + "</span>"; }).join("") + "</div>";
+    var sd = new Date(now); sd.setDate(now.getDate() + state.weekSel);
+    var sdi = sd.getDay(), sks = keys.filter(function (k) { return r.rules[k].days.indexOf(sdi) > -1; });
+    html += '<div class="dayinfo" aria-live="polite"><h3>' + (sd.getMonth() + 1) + "월 " + sd.getDate() + "일 " + DAYS[sdi] + "요일" + (state.weekSel === 0 ? " (오늘)" : state.weekSel === 1 ? " (내일)" : "") + "</h3>";
+    if (sks.length) {
+      sks.forEach(function (k) {
+        var ru = r.rules[k];
+        html += '<div class="dayrow"><span class="chip ' + GROUPS[k].chip + '">' + GROUPS[k].label + "</span><p>" + esc(ru.time) + " · " + esc(ru.place) + "<small>" + esc(ru.bag) + "</small></p></div>";
+      });
+    } else {
+      html += '<p class="none">수거하지 않는 날이에요. 쓰레기는 다음 배출일까지 집에 보관해 주세요.<br><small>미수거일: ' + esc(r.offDays) + "</small></p>";
+    }
+    html += "</div></section>";
+
+    html += '<button class="promo" type="button" data-goto="benefit"><div><b>버리고 돌려받기</b><span>' + esc(regionLabel(r, true)) + " 교환 " + localBenefits(r).length + "개 · 전국 포인트·환급 " + BENEFITS.length + '개</span></div><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m9 5 7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>';
+    html += '<section class="section"><h2>이건 어떻게 버려요?</h2><div class="quick">';
+    ["아이스팩", "택배 상자", "투명 페트병", "닭뼈", "깨진 유리", "건전지", "우유팩", "컵라면 용기"].forEach(function (n) {
+      html += '<button class="qbtn" type="button" data-item-name="' + esc(n) + '">' + esc(n) + "</button>";
+    });
+    html += "</div></section>";
+
+    html += '<p class="sample">시연용 예시 데이터예요. 실제 배출 요일은 ' + esc(r.dept) + " 공지를 확인해 주세요.</p>";
+    html += '<p class="src">데이터 기준일 ' + r.updated + " · 출처: 예시(공공데이터포털 생활쓰레기 배출정보 연동 예정)</p>";
+    html += "</div>";
+    return html;
+  }
+
+  /* ───────── 화면: 검색 ───────── */
+  function renderSearch() {
+    var html = '<div class="view">';
+    html += '<div class="search-head"><button class="back" type="button" id="searchBack" aria-label="홈으로"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m15 5-7 7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>';
+    html += '<div class="search-box"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="6.5" stroke="currentColor" stroke-width="2"/><path d="m16 16 4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>' +
+      '<input id="q" type="search" placeholder="버릴 물건 이름 (예: 아이스팩, ㅇㅇㅍ)" autocomplete="off" aria-label="품목 검색" value="' + esc(state.query) + '">' +
+      '<button class="clear" id="qClear" type="button" aria-label="검색어 지우기"' + (state.query ? "" : " hidden") + '>×</button></div></div>';
+    html += '<div id="searchBody">' + searchBody() + "</div></div>";
+    return html;
+  }
+  function searchBody() {
+    var q = state.query.trim(), html = "";
+    if (!q) {
+      if (state.recent.length) {
+        html += '<section class="section"><h2>최근 검색</h2><div class="recent">' +
+          state.recent.map(function (n) { return '<button class="rbtn" type="button" data-query="' + esc(n) + '">' + esc(n) + "</button>"; }).join("") +
+          '<button class="linkbtn" type="button" id="clearRecent">지우기</button></div></section>';
+      }
+      html += '<section class="section" style="margin-top:16px"><h2>자주 찾는 품목</h2><div class="quick">';
+      ["아이스팩", "영수증", "배달 플라스틱 용기", "스티로폼 상자", "달걀 껍데기", "커피 찌꺼기", "형광등", "가구"].forEach(function (n) {
+        html += '<button class="qbtn" type="button" data-item-name="' + esc(n) + '">' + esc(n) + "</button>";
+      });
+      html += '</div></section><section class="section" style="margin-top:16px"><h2>분류로 찾기</h2><div class="cats">';
+      Object.keys(CATS).forEach(function (c) {
+        var n = ITEMS.filter(function (it) { return it.cat === c; }).length;
+        if (n) html += '<button class="cat" type="button" data-cat="' + c + '">' + esc(CATS[c].label) + " <small>" + n + "</small></button>";
+      });
+      html += "</div></section>";
+      return html;
+    }
+    var catMatch = /^cat:(\w+)$/.exec(q);
+    var list = catMatch ? ITEMS.filter(function (it) { return it.cat === catMatch[1]; }) : search(q);
+    if (!list.length) {
+      var r = region();
+      return '<div class="empty"><b>"' + esc(q) + '"에 맞는 품목이 아직 없어요</b>' +
+        "<span>재질을 기준으로 다시 찾아보세요. 예: 플라스틱, 비닐, 종이, 유리병</span>" +
+        '<div class="quick"><button class="qbtn" type="button" data-cat="plastic">플라스틱</button><button class="qbtn" type="button" data-cat="vinyl">비닐</button><button class="qbtn" type="button" data-cat="general">일반쓰레기</button></div>' +
+        '<button class="btn primary" type="button" data-ask="' + esc(q) + ' 어떻게 버려요?">AI에게 물어보기</button>' +
+        '<span class="note">그래도 모르겠다면 ' + esc(r.dept) + "에 물어보세요. 전화 " + esc(r.phone) + "</span></div>";
+    }
+    html += '<div class="results" role="list">';
+    list.forEach(function (it) {
+      var al = catMatch ? "" : matchedAlias(it, q);
+      html += '<button class="res" role="listitem" type="button" data-item="' + it.id + '"><span class="n">' + esc(it.name) +
+        (al ? '<span class="a">' + esc(al) + "(으)로 검색됨</span>" : "") + "</span>" + chipFor(it.cat) + "</button>";
+    });
+    html += "</div>";
+    return html;
+  }
+
+  /* ───────── 화면: 품목 상세 ───────── */
+  function renderDetail(it) {
+    var r = region(), g = groupFor(it.cat, r), d = new Date().getDay();
+    var html = '<div class="view detail">';
+    html += '<button class="back" type="button" id="back"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m15 5-7 7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>뒤로</button>';
+    html += '<div class="d-head">' + chipFor(it.cat) + "<h1>" + esc(it.name) + "</h1>" +
+      (it.aliases.length ? '<span class="d-alias">' + esc(it.aliases.join(", ")) + "</span>" : "") + "</div>";
+
+    if (GROUPS[g] && r.rules[g]) {
+      var rule = r.rules[g], off = nextDay(rule.days, d);
+      html += '<section class="when" aria-label="우리 동네 배출 일정"><span class="t">' + esc(regionLabel(r, true)) + "에서는</span>" +
+        '<span class="v">' + GROUPS[g].label + " · " + daysText(rule.days) + " " + esc(rule.time) + "</span>" +
+        '<span class="s">' + (off === 0 ? "오늘 내놓을 수 있어요" : off > 0 ? "다음 배출: " + relDay(off, (d + off) % 7) : "") + " · " + esc(rule.place) + "</span></section>";
+    } else if (g === "bulky") {
+      html += '<section class="when special"><span class="t">' + esc(regionLabel(r, true)) + '에서는</span><span class="v">신고 후 배출</span>' +
+        '<span class="s">' + esc(r.siteLabel) + " 홈페이지 또는 주민센터에서 신고 · 문의 " + esc(r.phone) + '</span><div style="margin-top:8px">' + siteLink(r) + "</div></section>";
+    } else {
+      html += '<section class="when special"><span class="t">요일 상관없이</span><span class="v">전용 수거함에 넣어요</span>' +
+        '<span class="s">가까운 주민센터, 아파트, 대형마트 수거함</span></section>';
+    }
+
+    html += '<section class="section"><h2>버리는 방법</h2><ol class="steps">' + it.steps.map(function (s) { return "<li>" + esc(s) + "</li>"; }).join("") + "</ol></section>";
+    if (it.myth) html += '<section class="myth"><b>흔히 헷갈려요</b><p>' + esc(it.myth) + "</p></section>";
+    var bs = benefitsFor(it.id, r);
+    if (bs.length) {
+      html += '<section class="section"><h2>이걸로 받을 수 있는 혜택</h2><div class="mini-benefits">' +
+        bs.map(function (b) { return '<button class="mb" type="button" data-goto="benefit"><div><b>' + esc(b.title) + '</b><div style="font-size:14px;color:var(--text-sub)">' + esc(b.get) + "</div></div><span>" + (b.local ? "우리 동네" : "전국") + "</span></button>"; }).join("") +
+        "</div></section>";
+    }
+    html += '<button class="btn" type="button" data-askdraft="' + esc(it.name) + ' 버릴 때 궁금한 게 있어요. ">AI에게 더 물어보기</button>';
+    html += '<p class="src">품목 기준: 환경부 재활용품 분리배출 가이드라인 · 배출 요일: 예시 데이터</p>';
+    html += "</div>";
+    return html;
+  }
+
+  /* ───────── 화면: 우리동네 ───────── */
+  function renderLocal() {
+    var r = region(), d = new Date().getDay();
+    var keys = ORDER.filter(function (k) { return r.rules[k]; });
+    var cols = [1, 2, 3, 4, 5, 6, 0];
+    var html = '<div class="view">';
+    html += '<div class="local-head"><div><h1>' + esc(regionLabel(r)) + '</h1><span class="lv">' +
+      (r.level === "동" ? "동 단위 규칙" : "구 단위 규칙 · 동마다 다를 수 있어요") + "</span></div>" +
+      '<button class="btn" type="button" id="changeRegion">지역 변경</button></div>';
+
+    html += '<section class="section"><h2>요일표</h2><div class="table-wrap"><table><thead><tr><th scope="col">분류</th>' +
+      cols.map(function (c) { return '<th scope="col"' + (c === d ? ' class="today-col"' : "") + ">" + DAYS[c] + "</th>"; }).join("") + "</tr></thead><tbody>";
+    keys.forEach(function (k) {
+      html += '<tr><th scope="row" style="font-weight:600;color:var(--text);font-size:14px">' + GROUPS[k].label + "</th>" +
+        cols.map(function (c) {
+          var on = r.rules[k].days.indexOf(c) > -1;
+          return "<td" + (c === d ? ' class="today-col"' : "") + ">" + (on ? '<span class="mark ' + GROUPS[k].mark + '" role="img" aria-label="배출"></span>' : '<span aria-label="없음" style="color:var(--border)">·</span>') + "</td>";
+        }).join("") + "</tr>";
+    });
+    html += "</tbody></table></div></section>";
+
+    html += '<section class="section"><h2>배출 장소와 봉투</h2><dl class="infolist" style="margin:0">';
+    keys.forEach(function (k) {
+      var rule = r.rules[k];
+      html += '<div class="info"><dt>' + GROUPS[k].label + "</dt><dd>" + esc(rule.place) + "<small>" + esc(rule.time) + " · " + esc(rule.bag) + "</small></dd></div>";
+    });
+    html += '<div class="info"><dt>대형폐기물</dt><dd>' + esc(r.siteLabel) + ' 홈페이지·주민센터에서 신고 후 스티커 부착<small>대형 가전은 무상방문수거 1599-0903</small></dd></div>';
+    html += '<div class="info"><dt>미수거일</dt><dd>' + esc(r.offDays) + "</dd></div>";
+    html += "</dl></section>";
+
+    html += '<section class="section"><h2>헷갈리면 물어보세요</h2><dl class="infolist" style="margin:0"><div class="info"><dt>담당 부서</dt><dd>' + esc(r.dept) + "</dd></div>" +
+      '<div class="info"><dt>홈페이지</dt><dd>' + siteLink(r) + '<small>공지사항에서 배출 요일 변경, 대형폐기물 신고를 확인할 수 있어요</small></dd></div>' +
+      '<div class="info"><dt>전화</dt><dd><div class="call"><span class="num">' + esc(r.phone) + '</span><button class="mini" type="button" id="copyPhone">번호 복사</button></div><small>' + esc(r.phoneNote) + "</small></dd></div></dl></section>";
+
+    html += '<p class="sample">시연용 예시 데이터예요. 실제 서비스에서는 공공데이터를 정제해서 넣을 예정이에요.</p>';
+    html += '<p class="src">데이터 기준일 ' + r.updated + "</p></div>";
+    return html;
+  }
+
+  /* ───────── AI에게 물어보기 ───────── */
+  var sampleFn = null, sampleChecked = false, askCtl = null;
+  if (window.claude && typeof window.claude.use === "function") {
+    window.claude.use("sample").then(function (fn) {
+      sampleFn = fn; sampleChecked = true;
+      if (state.tab === "ask" && !state.asking) render();
+    }, function () { sampleChecked = true; });
+  } else { sampleChecked = true; }
+
+  function askContext() {
+    var r = region(), d = new Date();
+    var lines = [];
+    lines.push("너는 '바로버림'이라는 분리배출 도우미야. 아래 [우리 동네 규칙], [혜택], [품목 사전]을 근거로 사용자 질문에 답해.");
+    lines.push("- 한국어 존댓말로 3~6문장 이내로 짧게. #, **, 표 같은 마크다운 기호는 쓰지 말고, 필요하면 '1.' 처럼 줄바꿈 목록만 써.");
+    lines.push("- 먼저 어디에 버리는지(분류)를 말하고, 버리는 방법, 그다음 이 동네의 배출 요일·시간을 덧붙여.");
+    lines.push("- 품목 사전에 없으면 환경부 분리배출 일반 기준으로 답해. 확실하지 않으면 그렇다고 말하고 구청 확인을 권해.");
+    lines.push("- 분리배출·쓰레기와 관계없는 질문이면 분리배출 질문만 도울 수 있다고 짧게 말해.");
+    lines.push("");
+    lines.push("오늘: " + (d.getMonth() + 1) + "월 " + d.getDate() + "일 " + DAYS[d.getDay()] + "요일");
+    lines.push("[우리 동네 규칙] " + regionLabel(r) + " (시연용 예시 데이터)");
+    ORDER.forEach(function (k) {
+      var ru = r.rules[k]; if (!ru) return;
+      lines.push("- " + GROUPS[k].label + ": " + daysText(ru.days) + " " + ru.time + ", " + ru.place + ", " + ru.bag);
+    });
+    lines.push("- 미수거일: " + r.offDays + " / 대형폐기물: " + r.siteLabel + " 홈페이지·주민센터 신고 / 문의: " + r.dept + " " + r.phone);
+    lines.push("[혜택]");
+    localBenefits(r).concat(BENEFITS).forEach(function (b) { lines.push("- " + b.title + ": " + b.give + " → " + b.get + " (" + b.where + ")"); });
+    lines.push("[품목 사전]");
+    ITEMS.forEach(function (it) {
+      lines.push("- " + it.name + (it.aliases.length ? "(" + it.aliases.join(",") + ")" : "") + " = " + CATS[it.cat].label + ": " + it.steps.join(" / ") + (it.myth ? " | 주의: " + it.myth : ""));
+    });
+    return lines.join("\n");
+  }
+
+  function renderAsk() {
+    var r = region();
+    var html = '<div class="view">';
+    html += '<div class="ask-head"><button class="back" type="button" data-goto="today" aria-label="홈으로"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m15 5-7 7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>' +
+      "<div><h1>AI에게 물어보기</h1><p>" + esc(regionLabel(r, true)) + " 규칙을 기준으로 답해요</p></div></div>";
+    if (!state.chat.length) {
+      html += '<div class="ask-intro"><p>검색으로 안 나오는 물건이나 애매한 상황을 편하게 물어보세요.</p><div class="quick">';
+      ["치킨 먹고 남은 뼈랑 상자는 어떻게 버려요?", "이사 왔는데 음식물 쓰레기는 언제 내놔요?", "깨진 접시는 어디에 버려요?", "페트병 라벨이 잘 안 떨어지면요?"].forEach(function (s) {
+        html += '<button class="qbtn" type="button" data-ask="' + esc(s) + '">' + esc(s) + "</button>";
+      });
+      html += "</div></div>";
+    }
+    html += '<div class="msgs" id="msgs">';
+    state.chat.forEach(function (m, i) {
+      html += '<div class="msg ' + m.role + (m.pending && !m.content ? " pending" : "") + (m.err ? " err" : "") + '" data-i="' + i + '">' +
+        esc(m.content || (m.pending ? "생각하는 중…" : "")) + "</div>";
+    });
+    html += "</div>";
+    if (sampleChecked && !sampleFn) {
+      html += '<p class="sample">이 화면에서는 AI 기능을 쓸 수 없어요. Claude에서 이 페이지를 열면 물어볼 수 있어요.</p>';
+    } else {
+      html += '<form class="composer" id="askForm"><textarea id="askInput" rows="1" placeholder="궁금한 걸 물어보세요" aria-label="질문 입력">' + esc(state.draft) + "</textarea>" +
+        (state.asking ? '<button type="button" class="btn" id="askStop">멈추기</button>' : '<button type="submit" class="btn primary">보내기</button>') + "</form>";
+    }
+    html += '<div class="ask-foot"><span class="src">AI 답변은 틀릴 수 있어요. 지역 규칙은 시연용 예시예요.</span>' +
+      (state.chat.length && !state.asking ? '<button class="linkbtn" type="button" id="askReset">대화 지우기</button>' : "") + "</div>";
+    html += "</div>";
+    return html;
+  }
+
+  function askErrorText(code) {
+    if (code === "not_granted" || code === "sampling_disabled" || code === "not_declared" || code === "capability_disabled" || code === "capability_removed") return "AI 사용이 허용되지 않아서 답할 수 없어요.";
+    if (code === "rate_limited") return "질문이 너무 많았어요. 잠시 후에 다시 물어봐 주세요.";
+    if (code === "session_expired") return "로그인이 만료됐어요. 다시 로그인한 뒤 물어봐 주세요.";
+    if (code === "refused") return "이 질문에는 답할 수 없어요. 분리배출과 관련된 질문으로 바꿔 주세요.";
+    return "답을 받다가 연결이 끊겼어요. 다시 보내 주세요.";
+  }
+  function scrollChatEnd() {
+    var c = $(".composer") || $("#msgs"); if (c) window.scrollTo(0, document.body.scrollHeight);
+  }
+  function sendAsk(text) {
+    text = (text || "").trim();
+    if (!text || state.asking) return;
+    if (state.tab !== "ask" || state.detail) { state.tab = "ask"; state.detail = null; try { history.replaceState(null, "", "#ask"); } catch (e) {} }
+    state.draft = "";
+    state.chat.push({ role: "user", content: text });
+    var msg = { role: "assistant", content: "", pending: true };
+    state.chat.push(msg);
+    if (!sampleFn) {
+      msg.pending = false; msg.err = true;
+      msg.content = sampleChecked ? "이 화면에서는 AI 기능을 쓸 수 없어요." : "AI를 준비하는 중이에요. 잠시 후 다시 보내 주세요.";
+      render(); scrollChatEnd(); return;
+    }
+    state.asking = true; render(); scrollChatEnd();
+    var idx = state.chat.length - 1;
+    var history = state.chat.slice(0, -1).filter(function (m) { return !m.err && m.content; }).slice(-10)
+      .map(function (m) { return { role: m.role, content: m.content }; });
+    while (history.length && history[0].role !== "user") history.shift();
+    askCtl = new AbortController();
+    sampleFn([{ role: "user", content: askContext() }].concat(history), {
+      cache: false, modelTier: "quick", signal: askCtl.signal,
+      onText: function (u) {
+        msg.content = u.text;
+        var el = document.querySelector('.msg[data-i="' + idx + '"]');
+        if (el) { el.textContent = u.text; el.classList.remove("pending"); }
+      }
+    }).then(function (res) {
+      msg.content = res.text + (res.truncated ? "\n\n(답이 길어서 중간에 끊겼어요)" : "");
+    }, function (e) {
+      var code = e && e.code;
+      if (code === "cancelled") { msg.content = (e.text || "") + (e.text ? "\n\n(멈춤)" : "멈췄어요."); if (!e.text) msg.err = true; }
+      else if (e && e.text && code !== "refused") msg.content = e.text + "\n\n(" + askErrorText(code) + ")";
+      else { msg.content = askErrorText(code); msg.err = true; }
+    }).then(function () {
+      msg.pending = false; state.asking = false; askCtl = null;
+      if (state.tab === "ask" && !state.detail) { render(); scrollChatEnd(); }
+    });
+  }
+
+  /* ───────── 화면: 카테고리 ───────── */
+  var CAT_ORDER = ["paper", "pack", "plastic", "pet", "vinyl", "styro", "can", "glass", "food", "general", "nonflam", "special", "bulky"];
+  var S = 'fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"';
+  var ICONS = {
+    paper:   '<path d="M4 8.5 12 5l8 3.5v8L12 20l-8-3.5v-8Z" ' + S + '/><path d="M4 8.5 12 12l8-3.5M12 12v8" ' + S + '/>',
+    pack:    '<path d="M7 9 9 4h6l2 5v11H7V9Z" ' + S + '/><path d="M7 9h10M10 13h4" ' + S + '/>',
+    plastic: '<path d="M9 3h6v3l2 3v11a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V9l2-3V3Z" ' + S + '/><path d="M7 13h10" ' + S + '/>',
+    pet:     '<path d="M10 3h4v2.5c2 1 3 2.5 3 4.5v10a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V10c0-2 1-3.5 3-4.5V3Z" ' + S + '/><path d="M7 12h10v4H7" ' + S + '/>',
+    vinyl:   '<path d="M6 8h12l-1 12H7L6 8Z" ' + S + '/><path d="M9 8a3 3 0 0 1 6 0" ' + S + '/>',
+    styro:   '<rect x="4" y="6" width="16" height="12" rx="1.5" ' + S + '/><path d="M8 10h.01M12 10h.01M16 10h.01M10 14h.01M14 14h.01" ' + S + ' stroke-width="2.4"/>',
+    can:     '<ellipse cx="12" cy="5.5" rx="5" ry="2" ' + S + '/><path d="M7 5.5v13c0 1.1 2.2 2 5 2s5-.9 5-2v-13" ' + S + '/><path d="M7 10h10" ' + S + '/>',
+    glass:   '<path d="M10.5 3h3v4c1.5.8 2.5 2.2 2.5 4v9H8v-9c0-1.8 1-3.2 2.5-4V3Z" ' + S + '/>',
+    food:    '<path d="M12 8c-3.5-2-7-.5-7 4 0 4 3 8 5 8 1 0 1.5-.5 2-.5s1 .5 2 .5c2 0 5-4 5-8 0-4.5-3.5-6-7-4Z" ' + S + '/><path d="M12 8c0-2 1-3.5 3-4" ' + S + '/>',
+    general: '<path d="M5 7h14l-1.2 12.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8L5 7Z" ' + S + '/><path d="M3.5 7h17M9.5 7V4.5h5V7" ' + S + '/>',
+    nonflam: '<path d="M5 6h14l-2 13a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1L5 6Z" ' + S + '/><path d="m11 6 1.5 4-2 2.5 2 3" ' + S + '/>',
+    special: '<rect x="7" y="5" width="10" height="16" rx="1.5" ' + S + '/><path d="M10 3h4M10 13h4M12 11v4" ' + S + '/>',
+    bulky:   '<path d="M7 11V5a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v6" ' + S + '/><path d="M5 11h14v4H5zM7 15v5M17 15v5" ' + S + '/>'
+  };
+  function iconClass(cat) {
+    var g = CATS[cat].group;
+    if (g === "food") return "ic-food";
+    if (g === "general") return "ic-general";
+    if (g === "special" || g === "bulky") return "ic-blue";
+    return "ic-recycle";
+  }
+  function renderCategory() {
+    var r = region(), cat = state.cat, g = groupFor(cat, r);
+    var list = ITEMS.filter(function (it) { return it.cat === cat; });
+    var html = '<div class="catwrap"><nav class="side" role="tablist" aria-label="분류">';
+    CAT_ORDER.forEach(function (c) {
+      html += '<button type="button" role="tab" data-side="' + c + '" aria-selected="' + (c === cat) + '">' + esc(CATS[c].label) + "</button>";
+    });
+    html += '</nav><div class="catmain"><div class="cathead"><h1>' + esc(CATS[cat].label) + "</h1>";
+    if (GROUPS[g] && r.rules[g]) html += "<p>" + esc(regionLabel(r, true)) + " <b>" + GROUPS[g].label + " · " + daysText(r.rules[g].days) + "</b> " + esc(r.rules[g].time) + "</p>";
+    else if (g === "bulky") html += "<p>요일 없이 <b>신고 후 배출</b></p>";
+    else html += "<p>요일 없이 <b>전용 수거함</b>에 넣어요</p>";
+    html += '</div><div class="igrid">';
+    list.forEach(function (it) {
+      html += '<button class="icell" type="button" data-item="' + it.id + '"><span class="icircle ' + iconClass(cat) + '"><svg viewBox="0 0 24 24" aria-hidden="true">' + ICONS[cat] + "</svg></span>" + esc(it.name) + "</button>";
+    });
+    html += "</div></div></div>";
+    return html;
+  }
+
+  function siteLink(r) {
+    return '<a class="blink" href="' + r.site + '" target="_blank" rel="noopener">' + esc(r.siteLabel) + ' 홈페이지 ↗</a><small style="margin-top:4px">' + esc(r.site.replace(/^https?:\/\//, "")) + "</small>";
+  }
+
+  /* ───────── 화면: 혜택 ───────── */
+  function benefitCard(b) {
+    return '<article class="bcard"><div class="bcard-top"><h3>' + esc(b.title) + "</h3>" +
+      (b.local ? '<span class="tag tag-ex">예시</span>' : '<span class="tag tag-nat">전국</span>') + "</div>" +
+      '<dl class="bdl"><dt>가져갈 것</dt><dd>' + esc(b.give) + '</dd><dt>받는 것</dt><dd class="bget">' + esc(b.get) + "</dd><dt>어디서</dt><dd>" + esc(b.where) + "</dd></dl>" +
+      (b.link ? '<a class="blink" href="' + b.link + '" target="_blank" rel="noopener">' + esc(b.linkLabel) + " ↗</a>" : "") + "</article>";
+  }
+  function renderBenefit() {
+    var r = region();
+    var html = '<div class="view">';
+    html += '<div class="page-head"><h1>버리고 돌려받기</h1><p>제대로 분리해서 내면 포인트나 물건으로 돌려받을 수 있어요.</p></div>';
+    html += '<section class="section"><h2>' + esc(regionLabel(r, true)) + " 교환·수거</h2>" + localBenefits(r).map(benefitCard).join("") +
+      '<p class="sample">우리 동네 항목은 시연용 예시예요. 교환 기준(무게·개수)과 운영 여부는 동네마다 달라서 주민센터에 확인해 주세요.</p><div>' + siteLink(r) + "</div></section>";
+    html += '<section class="section"><h2>전국 어디서나</h2>' + BENEFITS.map(benefitCard).join("") +
+      '<p class="src">금액·연간 한도·참여 조건은 해마다 바뀔 수 있어요. 각 공식 안내를 확인해 주세요.</p></section>';
+    html += "</div>";
+    return html;
+  }
+
+  /* ───────── 렌더 & 라우팅 ───────── */
+  var main = $("#main");
+  function render() {
+    $("#regionName").textContent = regionLabel(region(), true);
+    var active = (state.tab === "search" || state.tab === "ask") ? "today" : state.tab;
+    document.querySelectorAll(".tab").forEach(function (t) { t.setAttribute("aria-selected", String(t.dataset.tab === active)); });
+    if (state.detail) main.innerHTML = renderDetail(state.detail);
+    else if (state.tab === "search") main.innerHTML = renderSearch();
+    else if (state.tab === "local") main.innerHTML = renderLocal();
+    else if (state.tab === "benefit") main.innerHTML = renderBenefit();
+    else if (state.tab === "category") main.innerHTML = renderCategory();
+    else if (state.tab === "ask") main.innerHTML = renderAsk();
+    else main.innerHTML = renderToday();
+    main.classList.toggle("flush", state.tab === "category" && !state.detail);
+  }
+  function go(tab) {
+    state.tab = tab; state.detail = null;
+    if (location.hash !== "#" + tab) { try { history.replaceState(null, "", "#" + tab); } catch (e) { location.hash = tab; } }
+    render(); window.scrollTo(0, 0);
+  }
+  function openItem(it) {
+    if (!it) return;
+    var rec = state.recent.filter(function (n) { return n !== it.name; });
+    rec.unshift(it.name); state.recent = rec.slice(0, 6); store.set("bb.recent", state.recent);
+    state.detail = it; render(); window.scrollTo(0, 0);
+  }
+  function itemByName(n) { for (var i = 0; i < ITEMS.length; i++) if (ITEMS[i].name === n) return ITEMS[i]; return search(n)[0]; }
+
+  document.querySelectorAll(".tab").forEach(function (t) { t.addEventListener("click", function () { go(t.dataset.tab); }); });
+  window.addEventListener("hashchange", function () {
+    var h = location.hash.slice(1);
+    if (["today", "search", "local", "benefit", "category", "ask"].indexOf(h) > -1 && (h !== state.tab || state.detail)) { state.tab = h; state.detail = null; render(); }
+  });
+
+  main.addEventListener("click", function (e) {
+    var b = e.target.closest("button"); if (!b) return;
+    if (b.dataset.goto) { go(b.dataset.goto); if (b.dataset.goto === "ask") { var ai = $("#askInput"); if (ai) ai.focus(); } return; }
+    if (b.dataset.ask) { sendAsk(b.dataset.ask); return; }
+    if (b.dataset.askdraft) { state.draft = b.dataset.askdraft; go("ask"); var ad = $("#askInput"); if (ad) { ad.focus(); ad.setSelectionRange(ad.value.length, ad.value.length); } return; }
+    if (b.id === "askStop") { if (askCtl) askCtl.abort(); return; }
+    if (b.id === "askReset") { state.chat = []; render(); return; }
+    if (b.dataset.wday) { state.weekSel = +b.dataset.wday; var y = window.scrollY; render(); window.scrollTo(0, y); return; }
+    if (b.dataset.side) { state.cat = b.dataset.side; var keep = $(".side") ? $(".side").scrollTop : 0; render(); if ($(".side")) $(".side").scrollTop = keep; return; }
+    if (b.dataset.item) { openItem(ITEMS.filter(function (i) { return i.id === b.dataset.item; })[0]); return; }
+    if (b.dataset.itemName) { openItem(itemByName(b.dataset.itemName)); return; }
+    if (b.dataset.query) { state.query = b.dataset.query; render(); return; }
+    if (b.dataset.cat) { state.tab = "search"; state.detail = null; state.query = "cat:" + b.dataset.cat; render(); var qi = $("#q"); if (qi) qi.value = CATS[b.dataset.cat].label + " 전체"; state.query = "cat:" + b.dataset.cat; return; }
+    if (b.id === "back") { state.detail = null; render(); if (state.tab === "search") { var qb = $("#q"); if (qb && !state.query) qb.focus(); } return; }
+    if (b.id === "homeSearch") { state.query = ""; go("search"); var qs = $("#q"); if (qs) qs.focus(); return; }
+    if (b.id === "searchBack") { state.query = ""; go("today"); return; }
+    if (b.id === "qClear") { state.query = ""; render(); var q = $("#q"); if (q) q.focus(); return; }
+    if (b.id === "clearRecent") { state.recent = []; store.set("bb.recent", []); $("#searchBody").innerHTML = searchBody(); return; }
+    if (b.id === "changeRegion") { openSetup(false); return; }
+    if (b.id === "copyPhone") {
+      var num = region().phone;
+      var done = function () { toast("번호를 복사했어요"); };
+      try { navigator.clipboard.writeText(num).then(done, function () { selectNum(); }); } catch (err) { selectNum(); }
+      return;
+    }
+  });
+  function selectNum() {
+    var el = $(".call .num"); if (!el) return;
+    var range = document.createRange(); range.selectNodeContents(el);
+    var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
+    toast("번호를 선택했어요. 복사해서 쓰세요");
+  }
+  main.addEventListener("submit", function (e) {
+    if (e.target.id !== "askForm") return;
+    e.preventDefault();
+    var t = $("#askInput"); sendAsk(t ? t.value : "");
+  });
+  main.addEventListener("input", function (e) {
+    if (e.target.id === "askInput") {
+      state.draft = e.target.value;
+      e.target.style.height = "auto"; e.target.style.height = Math.min(e.target.scrollHeight, 140) + "px";
+      return;
+    }
+    if (e.target.id !== "q") return;
+    state.query = e.target.value;
+    $("#qClear").hidden = !state.query;
+    $("#searchBody").innerHTML = searchBody();
+  });
+  main.addEventListener("keydown", function (e) {
+    if (e.target.id === "askInput" && e.key === "Enter" && !e.shiftKey && !e.isComposing) {
+      e.preventDefault(); sendAsk(e.target.value); return;
+    }
+    if (e.target.id === "q" && e.key === "Enter") {
+      var first = $(".res"); if (first) first.click();
+    }
+  });
+
+  /* ───────── 지역 설정 ───────── */
+  var setup = $("#setup"), selSido = $("#selSido"), selGu = $("#selGu"), selDong = $("#selDong"), saveBtn = $("#saveRegion");
+  function uniq(arr) { return arr.filter(function (v, i) { return arr.indexOf(v) === i; }); }
+  function opts(sel, list, ph) {
+    sel.innerHTML = '<option value="">' + ph + "</option>" + list.map(function (v) { return '<option value="' + esc(v.value) + '">' + esc(v.label) + "</option>"; }).join("");
+  }
+  function fillSido() { opts(selSido, uniq(REGIONS.map(function (r) { return r.sido; })).map(function (s) { return { value: s, label: s }; }), "시·도 선택"); }
+  function fillGu() {
+    var gus = uniq(REGIONS.filter(function (r) { return r.sido === selSido.value; }).map(function (r) { return r.gu; }));
+    opts(selGu, gus.map(function (g) { return { value: g, label: g }; }), "시·군·구 선택");
+    selGu.disabled = !selSido.value; fillDong();
+  }
+  function fillDong() {
+    var rs = REGIONS.filter(function (r) { return r.sido === selSido.value && r.gu === selGu.value; });
+    var hint = $("#dongHint");
+    if (rs.length === 1 && !rs[0].dong) {
+      opts(selDong, [{ value: rs[0].id, label: "동 정보 없음 (구 기준으로 안내)" }], "읍·면·동 선택");
+      selDong.value = rs[0].id; hint.textContent = "이 지역은 구 단위 데이터만 있어요. 동마다 다를 수 있어요.";
+    } else {
+      opts(selDong, rs.map(function (r) { return { value: r.id, label: r.dong }; }), "읍·면·동 선택");
+      hint.textContent = "";
+    }
+    selDong.disabled = !selGu.value;
+    saveBtn.disabled = !selDong.value;
+  }
+  selSido.addEventListener("change", fillGu);
+  selGu.addEventListener("change", fillDong);
+  selDong.addEventListener("change", function () { saveBtn.disabled = !selDong.value; });
+  saveBtn.addEventListener("click", function () {
+    state.regionId = selDong.value; store.set("bb.region", state.regionId);
+    setup.hidden = true; document.body.style.overflow = "";
+    render(); toast(regionLabel(region(), true) + " 기준으로 바꿨어요");
+  });
+  $("#cancelSetup").addEventListener("click", function () { setup.hidden = true; document.body.style.overflow = ""; });
+  function openSetup(first) {
+    fillSido();
+    var r = region();
+    if (!first) { selSido.value = r.sido; fillGu(); selGu.value = r.gu; fillDong(); selDong.value = r.id; saveBtn.disabled = false; }
+    else { fillGu(); }
+    $("#cancelSetup").hidden = first;
+    setup.hidden = false; document.body.style.overflow = "hidden";
+    selSido.focus();
+  }
+  $("#regionBtn").addEventListener("click", function () { openSetup(false); });
+
+  /* ───────── 시작 ───────── */
+  var h = location.hash.slice(1);
+  if (["today", "search", "local", "benefit", "category", "ask"].indexOf(h) > -1) state.tab = h;
+  render();
+  if (firstVisit) openSetup(true);
+})();
+</script>
+
+</body></html>
