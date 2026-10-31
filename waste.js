@@ -6,6 +6,9 @@ const KEY = process.env.DATA_GO_KR_API_KEY || "";
 const CACHE_MS = 6 * 60 * 60 * 1000;
 const fs = require("fs");
 const path = require("path");
+const shared = require("./store.js");
+// 받아 온 내용은 공유 저장소에도 1년 동안 남겨 둠. 포털이 멈추거나 서버가 새로 떠도 예전 내용이라도 보여 주려고
+const KEEP_SEC = 365 * 24 * 60 * 60;
 // 시군구 검색어 → { at, zones }. 포털이 멈춰도 검색되도록 파일에도 저장해 두고, 실패하면 오래된 값이라도 씀
 const CACHE_FILE = path.join(__dirname, "cache", "waste.json");
 let cache = new Map();
@@ -117,12 +120,13 @@ async function fetchRows(sgg) {
 // 시군구 이름으로 관리구역 목록 (같은 구역은 최신 갱신본만)
 async function searchZones(sgg) {
   sgg = String(sgg || "").trim();
-  const hit = cache.get(sgg);
+  let hit = cache.get(sgg);
+  if (!hit && shared.enabled) { hit = await shared.get("waste:" + sgg); if (hit) cache.set(sgg, hit); }
   if (hit && Date.now() - hit.at < CACHE_MS) return hit.zones;
   let rows;
   try { rows = await fetchRows(sgg); }
   catch (e) {
-    if (hit) { console.error("[waste] 공공데이터 응답 없음, 저장해 둔 " + sgg + " 데이터 사용:", e.message); return hit.zones; }
+    if (hit) { console.error("[waste] 응답 없음, 저장해 둔 " + sgg + " 데이터 사용 (" + new Date(hit.at).toISOString().slice(0, 10) + "):", e.message); return hit.zones; }
     throw e;
   }
   // 같은 구역의 옛 버전(관리번호 앞자리가 연도)이 섞여 오므로 구역별 최신 한 줄만 남김
@@ -134,8 +138,12 @@ async function searchZones(sgg) {
     if (newer) latest.set(k, row);
   });
   const zones = [...latest.values()].map((row) => toRegion(row)).filter((z) => Object.keys(z.rules).length);
-  cache.set(sgg, { at: Date.now(), zones });
+  // 빈 응답으로 저장해 둔 예전 내용을 덮어쓰지 않음
+  if (!zones.length && hit && hit.zones.length) return hit.zones;
+  const entry = { at: Date.now(), zones };
+  cache.set(sgg, entry);
   saveCache();
+  if (zones.length) await shared.set("waste:" + sgg, entry, KEEP_SEC);
   return zones;
 }
 
