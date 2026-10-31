@@ -132,11 +132,34 @@ async function readCsv(res) {
   return parseCsv(decode(buf));
 }
 
+// 파일 ID 찾기: 링크(atchFileId=FILE_..&fileDetailSn=..) → JS 호출 인자('FILE_..', '1') → FILE_.. 하나만
+function findFile(text) {
+  const m = text.match(/atchFileId=(FILE_\d+)&(?:amp;)?fileDetailSn=(\d+)/)
+    || text.match(/["'](FILE_\d+)["']\s*,\s*["']?(\d+)/)
+    || text.match(/"atchFileId"\s*:\s*"(FILE_\d+)"[\s\S]{0,200}?"fileDetailSn"\s*:\s*"?(\d+)/);
+  if (m) return { id: m[1], sn: m[2] };
+  const f = text.match(/FILE_\d{6,}/);
+  return f ? { id: f[0], sn: "1" } : null;
+}
+
 async function fromDataGoKr(id) {
   const html = await (await get("https://www.data.go.kr/data/" + id + "/fileData.do")).text();
-  const m = html.match(/fileDownload\.do\?atchFileId=(FILE_\d+)&(?:amp;)?fileDetailSn=(\d+)/);
-  if (!m) throw new Error("페이지에서 파일 링크를 못 찾음");
-  return readCsv(await get("https://www.data.go.kr/cmm/cmm/fileDownload.do?atchFileId=" + m[1] + "&fileDetailSn=" + m[2] + "&insertDataPrcus=N"));
+  let file = findFile(html);
+  // 다운로드 버튼이 링크 없이 JS로만 파일을 묻는 페이지 — 같은 요청을 직접 보냄
+  const detail = (html.match(/uddi:[0-9a-f-]{36}/i) || [])[0];
+  if (!file && detail) {
+    try {
+      const q = "?publicDataPk=" + id + "&publicDataDetailPk=" + encodeURIComponent(detail) + "&fileDetailSn=1";
+      file = findFile(await (await get("https://www.data.go.kr/tcs/dss/selectFileDataDownload.do" + q)).text());
+    } catch (e) { /* 아래 오류로 */ }
+  }
+  if (!file) {
+    const why = /삭제|폐기|존재하지 않/.test(html) ? "데이터가 삭제된 듯함"
+      : /LINK|링크/.test(html) && !/FILE_/.test(html) ? "외부 링크형 데이터(파일 없음)"
+      : "uddi " + (detail ? "있음" : "없음") + ", 페이지 " + html.length + "자";
+    throw new Error("페이지에서 파일 링크를 못 찾음 (" + why + ")");
+  }
+  return readCsv(await get("https://www.data.go.kr/cmm/cmm/fileDownload.do?atchFileId=" + file.id + "&fileDetailSn=" + file.sn + "&insertDataPrcus=N"));
 }
 
 async function fromPage(pageUrl) {
