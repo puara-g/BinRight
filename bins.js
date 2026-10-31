@@ -28,8 +28,16 @@ const SETS = {
 };
 const fs = require("fs");
 const path = require("path");
+const shared = require("./store.js");
+const KEEP_SEC = 7 * 24 * 60 * 60; // 공유 저장소에는 일주일 보관 (포털이 며칠 멈춰도 씀)
 const store = {}; // id → { at, rows, loading, error }
-// 마지막으로 받은 전체 데이터를 파일로 저장 → 서버를 다시 켜거나 포털이 멈춰도 바로 씀
+const ready = {}; // id → 저장해 둔 데이터를 불러오는 Promise
+// 마지막으로 받은 전체 데이터를 파일과 공유 저장소에 저장 → 서버를 다시 켜거나 포털이 멈춰도 바로 씀
+// (Vercel은 파일 저장이 안 되고 서버가 자주 새로 떠서 공유 저장소가 실제로 쓰임)
+async function init(id) {
+  const saved = loadSaved(id) || await shared.getBig("bins:" + id);
+  store[id] = saved && saved.rows ? { at: saved.at, rows: saved.rows } : { at: 0, rows: null };
+}
 const cacheFile = (id) => path.join(__dirname, "cache", "bins-" + id + ".json");
 function loadSaved(id) {
   try { const f = cacheFile(id); return { rows: JSON.parse(fs.readFileSync(f, "utf8")), at: fs.statSync(f).mtimeMs }; } catch (e) { return null; }
@@ -70,14 +78,20 @@ async function loadAll(id) {
 
 // 하루 지난 데이터는 뒤에서 새로 받고, 받는 동안엔 있던 데이터를 그대로 씀
 function rows(id) {
-  if (!store[id]) { const saved = loadSaved(id); store[id] = saved ? { at: saved.at, rows: saved.rows } : { at: 0, rows: null }; }
+  if (!ready[id]) ready[id] = init(id);
+  return ready[id].then(() => fresh(id));
+}
+function fresh(id) {
   const s = store[id];
   if (!s.loading && Date.now() - s.at > DAY) {
-    s.loading = loadAll(id).then((r) => { s.rows = r; s.at = Date.now(); s.error = null; save(id, r); console.log("[bins] " + id + " " + r.length + "건 받음"); })
+    s.loading = loadAll(id).then((r) => {
+      s.rows = r; s.at = Date.now(); s.error = null; save(id, r); console.log("[bins] " + id + " " + r.length + "건 받음");
+      return shared.setBig("bins:" + id, { at: s.at, rows: r }, KEEP_SEC);
+    })
       .catch((e) => { s.error = e.message; s.at = Date.now() - DAY + 10 * 60 * 1000; console.error("[bins] " + id, e.message); })
       .finally(() => { s.loading = null; });
   }
-  return s.rows ? Promise.resolve(s.rows) : s.loading.then(() => s.rows || []);
+  return s.rows ? s.rows : s.loading.then(() => s.rows || []);
 }
 
 function meters(a, b) {

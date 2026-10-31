@@ -4,11 +4,12 @@
 //  - page: 구청 홈페이지 공공데이터 상세 페이지 (공공데이터포털에 파일이 없는 구)
 //  - seoul: 서울 열린데이터광장 파일 (data.seoul.go.kr)
 //  - data/bins/*.csv: 위에 없는 지역을 직접 넣을 때. 지역은 파일 이름("서울특별시 마포구_...csv")에서 읽음
-// 컬럼은 이름 패턴으로 찾고, 좌표가 없으면 카카오 주소 검색으로 구해 cache/geocode.json 에 저장
+// 컬럼은 이름 패턴으로 찾고, 좌표가 없으면 카카오 주소 검색으로 구해 cache/geocode.json 과 공유 저장소에 저장
 "use strict";
 
 const fs = require("fs");
 const path = require("path");
+const shared = require("./store.js");
 
 const DIR = path.join(__dirname, "data", "bins");
 const KAKAO = process.env.KAKAO_REST_API_KEY || "";
@@ -170,6 +171,8 @@ async function fillCoords(rows, label) {
 // SOURCES + data/bins/*.csv 를 모두 읽어 좌표까지 채운 줄 목록. 받아 온 구의 직접 넣은 CSV는 무시
 async function loadSeoul() {
   const out = [], done = new Set();
+  // 다른 서버가 구해 둔 좌표를 먼저 합침 (카카오 호출 줄이기)
+  Object.assign(geo, await shared.getBig("geocode"), geo);
   for (const s of SOURCES) {
     let raw;
     try { raw = s.datagokr ? await fromDataGoKr(s.datagokr) : s.page ? await fromPage(s.page) : await fromSeoul(s.seoul); }
@@ -189,6 +192,7 @@ async function loadSeoul() {
     out.push(...(await fillCoords(rows, sido + " " + gu + " (직접 넣은 CSV)")));
   }
   saveGeo();
+  await shared.setBig("geocode", geo, 90 * 24 * 60 * 60);
   return out;
 }
 
