@@ -34,7 +34,7 @@ function systemPrompt(r) {
   lines.push("");
   lines.push("오늘: " + (d.getMonth() + 1) + "월 " + d.getDate() + "일 " + D.DAYS[d.getDay()] + "요일");
   if (r.noRules) lines.push("[우리 동네 규칙] " + D.regionLabel(r) + " (배출 요일·시간 정보를 아직 못 받음. 요일·시간은 지어내지 말고 " + r.dept + "에 확인하라고 안내해)");
-  else lines.push("[우리 동네 규칙] " + D.regionLabel(r) + (r.source === "public" ? " (행정안전부 생활쓰레기배출정보, 갱신일 " + r.updated + ")" : " (시연용 예시 데이터)"));
+  else lines.push("[우리 동네 규칙] " + D.regionLabel(r) + (r.source === "public" ? " (갱신일 " + r.updated + ")" : " (시연용 예시 데이터)"));
   D.ORDER.forEach((k) => {
     const ru = r.rules[k]; if (!ru) return;
     lines.push("- " + D.GROUPS[k].label + ": " + D.daysText(ru.days) + " " + ru.time + ", " + ru.place + ", " + ru.bag);

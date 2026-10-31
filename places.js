@@ -103,7 +103,7 @@ async function nearby(area, region) {
   for (const id of Object.keys(BIN_GROUPS)) {
     const g = BIN_GROUPS[id];
     const found = bins.enabled ? await bins.near(id, k.center, region, BIN_RADIUS, 5).catch(() => []) : [];
-    if (found.length) out.push({ id: g.id, title: g.title, items: g.items, source: "지자체 자료", places: found, note: "" });
+    if (found.length) out.push({ id: g.id, title: g.title, items: g.items, source: "", places: found, note: "" });
     else if (k.groups[g.fallback]) out.push(k.groups[g.fallback]);
   }
   if (k.groups.center) out.push(await withCollects(k.groups.center, region));

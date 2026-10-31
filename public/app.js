@@ -268,7 +268,7 @@
         "</div></section>";
     }
     html += '<button class="btn" type="button" data-askdraft="' + esc(it.name) + ' 버릴 때 궁금한 게 있어요. ">AI에게 더 물어보기</button>';
-    html += '<p class="src">품목 기준: 환경부 재활용품 분리배출 가이드라인 · 배출 요일: ' + (r.source === "public" ? "행정안전부 생활쓰레기배출정보" : "예시 데이터") + "</p>";
+    html += '<p class="src">품목 기준: 환경부 재활용품 분리배출 가이드라인' + (r.source === "public" ? "" : " · 배출 요일: 예시 데이터") + "</p>";
     html += "</div>";
     return html;
   }
@@ -280,7 +280,7 @@
     var cols = [1, 2, 3, 4, 5, 6, 0];
     var html = '<div class="view">';
     html += '<div class="local-head"><div><h1>' + esc(regionLabel(r)) + '</h1><span class="lv">' +
-      (r.source === "public" ? "행정안전부 자료 기준" + (r.zone && r.zone !== r.gu ? " · 관리구역 " + esc(r.zone) : "") : r.level === "동" ? "동 단위 규칙" : "구 단위 규칙 · 동마다 다를 수 있어요") + "</span></div>" +
+      (r.source === "public" ? (r.zone && r.zone !== r.gu ? "관리구역 " + esc(r.zone) : "") : r.level === "동" ? "동 단위 규칙" : "구 단위 규칙 · 동마다 다를 수 있어요") + "</span></div>" +
       '<button class="btn" type="button" id="changeRegion">지역 변경</button></div>';
 
     if (r.noRules) html += '<section class="section"><h2>요일표</h2><p class="note">배출 요일을 아직 받아 오지 못했어요. 받아 오면 자동으로 채워져요. 그 전에는 아래 담당 부서에 확인해 주세요.</p></section>';
@@ -370,7 +370,7 @@
     html += "</div>";
       html += '<form class="composer" id="askForm"><textarea id="askInput" rows="1" placeholder="궁금한 걸 물어보세요" aria-label="질문 입력">' + esc(state.draft) + "</textarea>" +
         (state.asking ? '<button type="button" class="btn" id="askStop">멈추기</button>' : '<button type="submit" class="btn primary">보내기</button>') + "</form>";
-    html += '<div class="ask-foot"><span class="src">AI 답변은 틀릴 수 있어요. ' + (region().source === "public" ? "지역 규칙은 행정안전부 자료 기준이에요." : "지역 규칙은 시연용 예시예요.") + "</span>" +
+    html += '<div class="ask-foot"><span class="src">AI 답변은 틀릴 수 있어요. ' + (region().source === "public" ? "" : "지역 규칙은 시연용 예시예요.") + "</span>" +
       (state.chat.length && !state.asking ? '<button class="linkbtn" type="button" id="askReset">대화 지우기</button>' : "") + "</div>";
     html += "</div>";
     return html;
@@ -466,7 +466,7 @@
 
   function sourceNote(r) {
     if (r.noRules) return '<p class="sample">배출 요일·장소는 아직 받아 오지 못했어요. ' + esc(r.dept) + "에 확인해 주세요.</p>";
-    if (r.source === "public") return '<p class="src">출처: 행정안전부 생활쓰레기배출정보 · 갱신일 ' + esc(r.updated) + "<br>실제 공지와 다르면 " + esc(r.dept) + " 안내가 우선이에요.</p>";
+    if (r.source === "public") return '<p class="src">갱신일 ' + esc(r.updated) + "<br>실제 공지와 다르면 " + esc(r.dept) + " 안내가 우선이에요.</p>";
     return '<p class="sample">시연용 예시 데이터예요. 실제 배출 요일은 ' + esc(r.dept) + " 공지를 확인해 주세요.</p>" +
       '<p class="src">데이터 기준일 ' + r.updated + "</p>";
   }
@@ -528,12 +528,12 @@
   }
   function distText(m) { return m >= 1000 ? (m / 1000).toFixed(1) + "km" : m + "m"; }
   function placeGroup(g, area) {
-    var html = '<article class="bcard"><div class="bcard-top"><h3>' + esc(g.title) + '</h3><span class="tag tag-nat">' + esc(g.source || "카카오맵") + "</span></div>";
+    var html = '<article class="bcard"><div class="bcard-top"><h3>' + esc(g.title) + '</h3>' + (g.source === "" ? "" : '<span class="tag tag-nat">' + esc(g.source || "카카오맵") + "</span>") + "</div>";
     if (g.places.length) {
       html += '<ul class="plist">' + g.places.map(function (p) {
         return '<li><a href="' + esc(p.url) + '" target="_blank" rel="noopener"><b>' + esc(p.name) + "</b>" + (p.distance === null ? "" : "<span>" + distText(p.distance) + "</span>") + "</a>" +
           "<small>" + esc(p.address) + (p.phone ? ' · <a href="tel:' + esc(p.phone.replace(/[^0-9]/g, "")) + '">' + esc(p.phone) + "</a>" : "") + "</small>" +
-          (p.collects && p.collects.length ? '<span class="collects">수거함 있음: ' + p.collects.map(esc).join(" · ") + " <em>지자체 자료</em></span>" : "") + "</li>";
+          (p.collects && p.collects.length ? '<span class="collects">수거함 있음: ' + p.collects.map(esc).join(" · ") + "</span>" : "") + "</li>";
       }).join("") + "</ul>";
     } else {
       html += '<p class="note">근처에서 찾지 못했어요. 아파트 단지나 대형마트 안에 있는 경우가 많아요.</p>';
@@ -553,7 +553,7 @@
       if (pl.status === "loading") html += '<p class="note">주변 장소를 찾는 중이에요…</p>';
       else if (pl.status === "error") html += '<p class="note">주변 장소를 불러오지 못했어요. 잠시 후 다시 열어 주세요.</p>';
       else html += pl.data.groups.map(function (g) { return placeGroup(g, pl.key); }).join("");
-      html += '<p class="src">' + esc(placeArea(r)) + " 근처 · 수거함: 지자체 수거함 자료(반경 2km) · 장소: 카카오맵(반경 3km)</p></section>";
+      html += '<p class="src">' + esc(placeArea(r)) + " 근처 · 수거함 반경 2km · 장소: 카카오맵(반경 3km)</p></section>";
     } else {
       html += '<section class="section"><h2>' + esc(regionLabel(r, true)) + " 교환·수거</h2>" + localBenefits(r).map(benefitCard).join("") +
         (r.source === "public" ? '<p class="note">운영 여부와 교환 기준은 동네마다 달라요. 가까운 행정복지센터에 확인해 주세요.</p>'
@@ -745,7 +745,7 @@
   });
   $("#cancelSetup").addEventListener("click", function () { setup.hidden = true; document.body.style.overflow = ""; });
   function openSetup(first) {
-    $("#setupNote").innerHTML = useKr() ? "배출 요일·장소는 행정안전부 자료에서 가져와요.<br class=\"pc\"> 실제 구청 공지와 다르면 구청 안내가 우선이에요."
+    $("#setupNote").innerHTML = useKr() ? "실제 구청 공지와 다르면 구청 안내가 우선이에요."
       : "지금은 시연용 예시 지역 6곳만 들어 있어요.<br class=\"pc\"> 요일·장소는 실제 구청 공지와 다를 수 있어요.";
     var r = region();
     pick = first ? { sido: "", gu: "", dong: "" } : { sido: r.sido, gu: r.gu, dong: useKr() ? r.dong || "" : r.id };
