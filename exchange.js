@@ -1,10 +1,11 @@
 // 동네 행정복지센터의 재활용품 교환 사업(우유팩→화장지, 폐건전지→새 건전지 등)을 웹에서 찾아 정리
 // 다음 검색 API(카카오 키)로 블로그·웹문서를 찾고, 그 구·동 이름이 나오는 글만 골라 Gemini가 항목으로 뽑음.
-// 출처 글을 같이 돌려주고, 동네별로 2주 동안 cache/exchange.json 에 저장
+// 출처 글을 같이 돌려주고, 동네별로 2주 동안 저장 (공유 저장소가 있으면 거기에, 아니면 cache/exchange.json)
 "use strict";
 
 const fs = require("fs");
 const path = require("path");
+const store = require("./store.js");
 
 const KAKAO = process.env.KAKAO_REST_API_KEY || "";
 const GEMINI = process.env.GEMINI_API_KEY || "";
@@ -100,11 +101,15 @@ async function find(sido, sgg, dong) {
   if (hit && Date.now() - hit.at < CACHE_MS) return hit.data;
   if (pending.has(key)) return pending.get(key);
   const job = (async () => {
+    // 다른 서버가 이미 찾아 둔 결과가 있으면 그대로 사용
+    const shared = await store.get("exchange:" + key);
+    if (shared && Date.now() - shared.at < CACHE_MS) { cache[key] = shared; return shared.data; }
     const docs = await search(sido, sgg, dong);
     const items = docs.length ? await extract(sido, sgg, dong, docs) : [];
     const data = { area: key, items, searched: docs.length, at: new Date().toISOString().slice(0, 10) };
     cache[key] = { at: Date.now(), data };
     saveCache();
+    await store.set("exchange:" + key, cache[key], CACHE_MS / 1000);
     return data;
   })().catch((e) => { if (hit) return hit.data; throw e; }).finally(() => pending.delete(key));
   pending.set(key, job);
