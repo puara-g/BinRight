@@ -70,7 +70,8 @@ async function extract(sido, sgg, dong, docs) {
     "아래는 '" + where + "'의 재활용품 교환·수거 사업을 찾으려고 검색한 글 목록이야.",
     "글에 '" + sgg + "'" + (dong ? " 또는 '" + dong + "'" : "") + "에서 실제로 운영한다고 분명히 적힌 사업만 뽑아. 다른 지역 이야기, 일반적인 설명('주민센터에 물어보세요' 등), 추측은 빼.",
     "같은 사업은 하나로 합치고, 가장 최근 글을 기준으로 해. 없으면 빈 배열.",
-    "JSON 배열로만 답해. 각 항목: {\"give\": 가져갈 것(짧게), \"get\": 받는 것(짧게), \"condition\": 교환 기준·기간 등(모르면 빈 문자열), \"scope\": \"" + sgg + " 전체\" 또는 동 이름, \"sources\": [글 번호들]}",
+    "JSON 배열로만 답해. 각 항목: {\"give\": 가져갈 것(짧게), \"get\": 받는 것(짧게), \"condition\": 교환 기준·기간 등(모르면 빈 문자열), \"scope\": \"" + sgg + " 전체\" 또는 동 이름, \"ends\": 끝나는 날짜, \"sources\": [글 번호들]}",
+    "ends: 하루 행사·기간이 정해진 행사면 마지막 날을 YYYY-MM-DD로 (연도가 없으면 글 날짜의 연도). 상시 운영이거나 끝나는 날을 모르면 빈 문자열.",
     "",
     docs.map((d, i) => "[" + i + "] (" + (d.date || "날짜 모름") + ") " + d.title + " — " + d.text).join("\n")
   ].join("\n");
@@ -90,12 +91,23 @@ async function extract(sido, sgg, dong, docs) {
     return {
       give: String(it.give).slice(0, 60), get: String(it.get).slice(0, 60),
       condition: String(it.condition || "").slice(0, 120), scope: String(it.scope || sgg).slice(0, 30),
+      ends: /^\d{4}-\d{2}-\d{2}$/.test(it.ends) ? it.ends : "",
       sources: src.map((d) => ({ title: d.title.slice(0, 60), url: d.url, date: d.date }))
     };
   }).filter((it) => it.sources.length); // 출처 없는 항목은 버림
 }
 
+// 이미 끝난 행사(ends가 오늘보다 앞)는 빼고 돌려줌. 날짜는 한국 시간 기준
+function current(data) {
+  const today = new Date(Date.now() + 9 * 3600 * 1000).toISOString().slice(0, 10);
+  return Object.assign({}, data, { items: data.items.filter((it) => !it.ends || it.ends >= today) });
+}
+
 async function find(sido, sgg, dong) {
+  return current(await lookup(sido, sgg, dong));
+}
+
+async function lookup(sido, sgg, dong) {
   const key = [sido, sgg, dong].join(" ").trim();
   const hit = cache[key];
   if (hit && Date.now() - hit.at < CACHE_MS) return hit.data;
