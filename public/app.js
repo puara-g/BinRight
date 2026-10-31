@@ -674,6 +674,18 @@
     var list = (tree()[sido] || {})[gu] || [];
     return list.map(function (d) { return typeof d === "string" ? { value: d, label: d } : d; });
   }
+  // 목록은 행정동 이름이라 주소에 쓰는 법정동으로 찾으면 안 나옴 → 행정동: [법정동] 으로 같이 찾게 함
+  var LEGAL_DONG = {
+    "고양시 덕양구": {
+      "창릉동": ["동산동", "용두동"], "삼송1동": ["오금동"], "행신2동": ["강매동"], "능곡동": ["내곡동", "대장동", "신평동"],
+      "관산동": ["내유동"], "흥도동": ["도내동"], "고양동": ["벽제동", "선유동"], "효자동": ["북한동"],
+      "원신동": ["신원동", "원당동"], "행주동": ["행주내동", "행주외동"], "화전동": ["향동동"], "대덕동": ["현천동"]
+    }
+  };
+  function legalMatch(label, q) {
+    var list = pickStep() === 2 && (LEGAL_DONG[pick.gu] || {})[label] || [];
+    return list.filter(function (n) { return n.indexOf(q) > -1; })[0] || "";
+  }
   var STEPS = ["시·도", "시·군·구", "읍·면·동"];
   var pick = { sido: "", gu: "", dong: "" };
   function pickStep() { return !pick.sido ? 0 : !pick.gu ? 1 : 2; }
@@ -692,10 +704,11 @@
     var q = pickFilter.value.trim();
     pickFilter.hidden = step === 0 || items.length <= 12;
     pickFilter.placeholder = STEPS[step] + " 이름으로 찾기";
-    var shown = q ? items.filter(function (it) { return it.label.indexOf(q) > -1; }) : items;
+    var shown = q ? items.filter(function (it) { return it.label.indexOf(q) > -1 || legalMatch(it.label, q); }) : items;
     pickGrid.className = "picker-grid" + (step === 0 ? " wide" : "");
     pickGrid.innerHTML = shown.length ? shown.map(function (it) {
-      return '<button class="pick" type="button" data-v="' + esc(it.value) + '" aria-pressed="' + (it.value === cur) + '">' + esc(it.label) + "</button>";
+      var legal = q && it.label.indexOf(q) < 0 ? legalMatch(it.label, q) : "";
+      return '<button class="pick" type="button" data-v="' + esc(it.value) + '" aria-pressed="' + (it.value === cur) + '">' + esc(it.label) + (legal ? " (" + esc(legal) + ")" : "") + "</button>";
     }).join("") : '<p class="hint">"' + esc(q) + '"에 해당하는 곳이 없어요.</p>';
     var chosen = pick.dong && dongItems(pick.sido, pick.gu).filter(function (d) { return d.value === pick.dong; })[0];
     saveBtn.disabled = !chosen;
