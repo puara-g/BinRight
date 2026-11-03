@@ -122,9 +122,15 @@ async function searchZones(sgg) {
   sgg = String(sgg || "").trim();
   let hit = cache.get(sgg);
   if (!hit && shared.enabled) { hit = await shared.get("waste:" + sgg); if (hit) cache.set(sgg, hit); }
-  if (hit && Date.now() - hit.at < CACHE_MS) return hit.zones;
+  // 빈 결과는 오래 믿지 않음 (30분 뒤 다시 물어봄)
+  if (hit && Date.now() - hit.at < (hit.zones.length ? CACHE_MS : 30 * 60 * 1000)) return hit.zones;
   let rows;
-  try { rows = await fetchRows(sgg); }
+  try {
+    rows = await fetchRows(sgg);
+    // 포털에 '남양주시'가 '남양주', '동두천시'가 '동두천'처럼 시·군·구 없이 들어간 곳이 있어서, 없으면 끝 글자를 빼고 한 번 더 찾음
+    const stem = sgg.replace(/[시군구]$/, "");
+    if (!rows.length && stem !== sgg && stem.length >= 2) rows = await fetchRows(stem);
+  }
   catch (e) {
     if (hit) { console.error("[waste] 응답 없음, 저장해 둔 " + sgg + " 데이터 사용 (" + new Date(hit.at).toISOString().slice(0, 10) + "):", e.message); return hit.zones; }
     throw e;
@@ -138,6 +144,7 @@ async function searchZones(sgg) {
     if (newer) latest.set(k, row);
   });
   const zones = [...latest.values()].map((row) => toRegion(row)).filter((z) => Object.keys(z.rules).length);
+  if (rows.length && !zones.length) console.warn("[waste] " + sgg + ": " + rows.length + "줄 받았지만 요일을 못 읽음", rows.slice(0, 3).map((r) => [r.LF_WST_EMSN_DOW, r.FOD_WST_EMSN_DOW, r.RCYCL_EMSN_DOW]));
   // 빈 응답으로 저장해 둔 예전 내용을 덮어쓰지 않음
   if (!zones.length && hit && hit.zones.length) return hit.zones;
   const entry = { at: Date.now(), zones };

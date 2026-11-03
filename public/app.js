@@ -130,9 +130,9 @@
     html += '<p class="date">' + dateStr + " · " + esc(regionLabel(r, true)) + " 기준</p>";
     html += '<section class="hero" aria-labelledby="heroTitle">';
     if (r.noRules) {
-      html += '<span class="hero-label" id="heroTitle">배출 요일 정보를 아직 못 받았어요</span>';
+      html += '<span class="hero-label" id="heroTitle">' + (r.noData ? "이 동네는 배출 요일 자료가 없어요" : "배출 요일 정보를 아직 못 받았어요") + "</span>";
       html += '<div class="hero-main none">' + esc(r.siteLabel) + "에 확인해 주세요</div>";
-      html += '<div class="hero-time">배출 정보가 들어오면 자동으로 채워져요</div>';
+      html += '<div class="hero-time">' + (r.noData ? "행정안전부 자료에 아직 등록되지 않은 지역이에요" : "배출 정보가 들어오면 자동으로 채워져요") + "</div>";
     } else if (todayKeys.length) {
       html += '<span class="hero-label" id="heroTitle">오늘 내놓을 수 있어요</span>';
       html += '<div class="hero-main">' + todayKeys.map(function (k) { return GROUPS[k].label; }).join(" · ") + "</div>";
@@ -283,7 +283,7 @@
       (r.source === "public" ? (r.zone && r.zone !== r.gu ? "관리구역 " + esc(r.zone) : "") : r.level === "동" ? "동 단위 규칙" : "구 단위 규칙 · 동마다 다를 수 있어요") + "</span></div>" +
       '<button class="btn" type="button" id="changeRegion">지역 변경</button></div>';
 
-    if (r.noRules) html += '<section class="section"><h2>요일표</h2><p class="note">배출 요일을 아직 받아 오지 못했어요. 받아 오면 자동으로 채워져요. 그 전에는 아래 담당 부서에 확인해 주세요.</p></section>';
+    if (r.noRules) html += '<section class="section"><h2>요일표</h2><p class="note">' + (r.noData ? "행정안전부 배출 정보에 이 지역 자료가 아직 없어요. 아래 담당 부서에 확인해 주세요." : "배출 요일을 아직 받아 오지 못했어요. 받아 오면 자동으로 채워져요. 그 전에는 아래 담당 부서에 확인해 주세요.") + '</p></section>';
     else html += '<section class="section"><h2>요일표</h2><div class="table-wrap"><table><thead><tr><th scope="col">분류</th>' +
       cols.map(function (c) { return '<th scope="col"' + (c === d ? ' class="today-col"' : "") + ">" + DAYS[c] + "</th>"; }).join("") + "</tr></thead><tbody>";
     keys.forEach(function (k) {
@@ -465,7 +465,7 @@
   }
 
   function sourceNote(r) {
-    if (r.noRules) return '<p class="sample">배출 요일·장소는 아직 받아 오지 못했어요. ' + esc(r.dept) + "에 확인해 주세요.</p>";
+    if (r.noRules) return '<p class="sample">배출 요일·장소는 ' + (r.noData ? "자료에 아직 없어요. " : "아직 받아 오지 못했어요. ") + esc(r.dept) + "에 확인해 주세요.</p>";
     if (r.source === "public") return '<p class="src">갱신일 ' + esc(r.updated) + "<br>실제 공지와 다르면 " + esc(r.dept) + " 안내가 우선이에요.</p>";
     return '<p class="sample">시연용 예시 데이터예요. 실제 배출 요일은 ' + esc(r.dept) + " 공지를 확인해 주세요.</p>" +
       '<p class="src">데이터 기준일 ' + r.updated + "</p>";
@@ -774,7 +774,7 @@
     var gu = b.gu.replace(/\s/g, ""), city = b.gu.split(" ")[0], last = b.gu.split(" ").pop();
     var inSido = zones.filter(function (z) { return sameSido(z.sido, b.sido); });
     var exact = inSido.filter(function (z) { var g = z.gu.replace(/\s/g, ""); return g === gu || (last !== city && g.slice(-last.length) === last); });
-    var cand = exact.length ? exact : inSido.filter(function (z) { return z.gu === city || z.gu.indexOf(city.replace(/시$/, "")) === 0; }); // 세종시 ↔ 세종특별자치시
+    var cand = exact.length ? exact : inSido.filter(function (z) { return z.gu === city || z.gu.indexOf(city.replace(/[시군]$/, "")) === 0; }); // 세종시 ↔ 세종특별자치시, 남양주시 ↔ 남양주
     if (!cand.length) return null;
     var dk = dongKey(b.dong);
     return cand.filter(function (z) { return z.areas.some(function (a) { return a === b.dong || dongKey(a) === dk; }); })[0] ||
@@ -784,8 +784,16 @@
   function loadRules(b) {
     if (!config.waste) return;
     fetch("/api/waste?sgg=" + encodeURIComponent(b.sgg)).then(function (r) { return r.json(); }).then(function (j) {
+      if (!state.pub || state.pub.id !== b.id) return;
       var z = matchZone(j.zones || [], b);
-      if (!z || !state.pub || state.pub.id !== b.id) return;
+      // 제대로 답을 받았는데도 없으면 이 지역은 자료 자체가 없는 것 → "곧 채워져요" 대신 그렇다고 안내
+      if (!z) {
+        if (j.zones && !state.pub.noData) {
+          state.pub = Object.assign({}, state.pub, { noData: true }); store.set("bb.pubRegion", state.pub);
+          if (state.regionId === b.id && !state.asking) render();
+        }
+        return;
+      }
       z = Object.assign({}, z, { id: z.id + ":" + b.dong, sido: b.sido, gu: b.gu, dong: b.dong, level: "동" });
       var shown = state.regionId === b.id;
       state.pub = z; store.set("bb.pubRegion", z);
